@@ -10,14 +10,12 @@
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#680101"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true
     },
@@ -25,7 +23,14 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "config": {
+        "googleSignIn": {
+          "apiKey": "2ECC15507B437E14044D0C302CFB9CB32615B3A3A32197FF5819AC71E944F9D1"
+        }
+      },
+      "googleServicesFile": "./google-services.json",
+      "package": "com.moox"
     },
     "web": {
       "favicon": "./assets/images/favicon.png"

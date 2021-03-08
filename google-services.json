@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "917298788494",
+    "project_id": "moox-events-project",
+    "storage_bucket": "moox-events-project.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:917298788494:android:4bb82e64244a64ce4f71df",
+        "android_client_info": {
+          "package_name": "com.moox"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "917298788494-6eo4pj7lepa6khul04hs3hg7p76jondh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA9JiE5ylo7OV_mtYmU5YzJRfrE7-7nRQc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "917298788494-6eo4pj7lepa6khul04hs3hg7p76jondh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
