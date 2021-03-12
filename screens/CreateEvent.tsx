@@ -22,25 +22,25 @@ const eventList = [
 export default function CreateEvent(props: any) {
   const { navigation } = props;
 
-  const [showDatePicker, setShowDatePicker] = useState("");
-  const [showCompleted, setShowCompleted] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  // const [showCompleted, setShowCompleted] = useState(false);
+  // const [selectedDate, setSelectedDate] = useState(new Date());
+  const [date, setDate] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
   // useEffect(() => {
   //   setShowDatePicker(false);
   // }, [selectedDate]);
 
-  const showDatepicker = () => {
-    setShowCompleted(!showCompleted);
-  };
+  // const [mode, setMode] = useState("date");
 
-  const handleChangeDate = (date, setFieldValue) => {
-    const currentDate = date || selectedDate;
-    const formattedDate = moment(date).format("L");
-    console.log({ formattedDate });
-    setFieldValue("date", formattedDate);
-    // setShowDatePicker(false);
-    setSelectedDate(currentDate);
+  const onChangeDatePicker = (selectedDate) => {
+    const currentSelectedDate = selectedDate || date;
+    setShowDatePicker(false);
+    setDate(currentSelectedDate);
+
+    // const formattedDate = moment(date).format("L");
+    // console.log({ formattedDate });
+    // setFieldValue("date", formattedDate);
   };
 
   const _handleSubmit = async (values: any) => {
@@ -48,12 +48,12 @@ export default function CreateEvent(props: any) {
       console.log("post create event");
       const payload = {
         name: values.name,
-        // date: values.date,
-        date: "2021-02-14 02:02:06",
+        date: moment(date).format("YYYY-MM-DD hh:mm:ss"),
         id_event_category: 2,
         description: values.description,
         address: values.address,
       };
+      console.log({ payload });
       const res = await postEvent(payload);
       if (res) {
         navigation.navigate("TabTwoScreen");
@@ -64,8 +64,6 @@ export default function CreateEvent(props: any) {
       console.error(error);
     }
   };
-
-  console.log({ selectedDate });
 
   return (
     <View style={styles.container}>
@@ -101,17 +99,35 @@ export default function CreateEvent(props: any) {
             </View>
             <View style={styles.inputWrapper}>
               <Text>Event Date</Text>
-              <Pressable onPress={() => setShowDatePicker("date")}>
-                <TextInput
-                  autoCapitalize="none"
-                  onChangeText={handleChange("date")}
-                  onBlur={handleBlur("date")}
-                  value={values.date}
+              <Pressable onPress={() => setShowDatePicker(true)}>
+                <View
+                  // autoCapitalize="none"
+                  // onChangeText={handleChange("date")}
+                  // onBlur={handleBlur("date")}
+                  // value={values.date}
                   style={styles.textInput}
-                  editable={false}
-                />
+                  // editable={false}
+                >
+                  <Text style={{ paddingVertical: 6 }}>{values.date}</Text>
+                </View>
               </Pressable>
-              <DateTimePicker
+              {showDatePicker && (
+                <DateTimePicker
+                  testID="dateTimePicker"
+                  value={date}
+                  mode={"date"}
+                  is24Hour={true}
+                  display="default"
+                  onChange={(event, selectedDate) => {
+                    onChangeDatePicker(selectedDate);
+
+                    const formattedDate = moment(selectedDate).format("L");
+                    console.log({ formattedDate });
+                    setFieldValue("date", formattedDate);
+                  }}
+                />
+              )}
+              {/* <DateTimePicker
                 // testID="dateTimePicker"
                 value={selectedDate}
                 mode={showDatePicker}
@@ -120,7 +136,7 @@ export default function CreateEvent(props: any) {
                 onChange={(event, date) =>
                   handleChangeDate(date, setFieldValue)
                 }
-              />
+              /> */}
             </View>
             {/* <View style={styles.inputWrapper}>
               <Text>Event Category</Text>

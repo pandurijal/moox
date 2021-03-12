@@ -1,11 +1,55 @@
-import * as React from "react";
-import { StyleSheet, TextInput } from "react-native";
+import React, { useState, useEffect } from "react";
+import { StyleSheet, ActivityIndicator, Pressable } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { getTodoDetail, updateTodo } from "./../services";
 
 import EditScreenInfo from "../components/EditScreenInfo";
 import { Text, View } from "../components/Themed";
 
-export default function TodoDetail() {
+export default function TodoDetail(props) {
+  const { navigation, route } = props;
+
+  const [loading, setLoading] = useState(false);
+  const [isTicking, setIsTicking] = useState(false);
+  const [todoDetail, setTodoDetail] = useState({});
+  const [todoList, setTodoList] = useState([]);
+
+  const _getMyTodoDetail = async () => {
+    const { todoId } = route.params;
+    try {
+      setLoading(true);
+      const res = await getTodoDetail(todoId);
+      setTodoDetail(res?.data?.[0]);
+      setTodoList(res?.todo_list);
+    } catch (error) {
+      console.log({ error, res: error.response });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    _getMyTodoDetail();
+  }, []);
+
+  const handleTick = async (id, status) => {
+    console.log({ id });
+    try {
+      setIsTicking(true);
+      const payload = {
+        status,
+      };
+      const res = await updateTodo(id, payload);
+      await _getMyTodoDetail();
+    } catch (error) {
+      console.log({ error, res: error.response });
+    } finally {
+      setIsTicking(false);
+    }
+  };
+
+  console.log({ todoDetail, todoList });
+
   return (
     <View style={styles.container}>
       <View
@@ -16,11 +60,22 @@ export default function TodoDetail() {
           alignItems: "center",
         }}
       >
-        <Text>My Birthday</Text>
-        <Text>Edit</Text>
+        <Text>{todoDetail?.name}</Text>
+        <Pressable
+          onPress={() =>
+            navigation.navigate("TodoForm", { todoId: todoDetail?.id })
+          }
+        >
+          <Text>Edit</Text>
+        </Pressable>
       </View>
+      {!todoList?.length && loading && (
+        <View style={{ marginVertical: 30 }}>
+          <ActivityIndicator size="large" color="#680101" />
+        </View>
+      )}
       <View>
-        {["Find Vendor", "Book a Place"].map((val) => (
+        {todoList?.map((val) => (
           <View
             style={{
               flexDirection: "row",
@@ -28,8 +83,33 @@ export default function TodoDetail() {
               alignItems: "center",
             }}
           >
-            <Text>{val}</Text>
-            <Ionicons name="checkbox" color="green" style={{ fontSize: 32 }} />
+            <Text>{val?.name}</Text>
+            {isTicking && <ActivityIndicator size="small" color="#680101" />}
+            {!isTicking && (
+              <>
+                {val?.status ? (
+                  <Pressable
+                    onPress={() => handleTick(val.id_todo_list, "false")}
+                  >
+                    <Ionicons
+                      name="checkbox"
+                      color="green"
+                      style={{ fontSize: 32 }}
+                    />
+                  </Pressable>
+                ) : (
+                  <Pressable
+                    onPress={() => handleTick(val.id_todo_list, "true")}
+                  >
+                    <Ionicons
+                      name="square-outline"
+                      color="gray"
+                      style={{ fontSize: 32 }}
+                    />
+                  </Pressable>
+                )}
+              </>
+            )}
           </View>
         ))}
       </View>

@@ -14,6 +14,7 @@ export const userLoginAction = (payload: any) => async (dispatch: any) => {
   dispatch({ type: USER_LOGIN_REQUEST });
   try {
     const res = await userLogin(payload);
+    console.log({ res });
     if (res) {
       dispatch({ type: USER_LOGIN_SUCCESS, payload: res });
       const userToken = {

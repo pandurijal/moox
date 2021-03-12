@@ -77,8 +77,8 @@ export const getVendorTypeList = () => {
   return baseURL.get("/type_vendor").then((res) => res.data);
 };
 
-export const getMyEvent = () => {
-  return baseURL.get("/events_me").then((res) => res.data);
+export const getMyEvent = (payload: any) => {
+  return baseURL.post("/events_me", payload).then((res) => res.data);
 };
 
 export const getMyEventDetail = (eventId: any) => {
@@ -93,8 +93,26 @@ export const getPackageList = () => {
   return baseURL.get("/package_vendor").then((res) => res.data);
 };
 
+export const getPackageSearch = (payload: any) => {
+  return baseURL.post("/package_vendor/find", payload).then((res) => res.data);
+};
+
 export const getPackageDetail = (packageId: any) => {
   return baseURL.get(`/package_vendor/${packageId}`).then((res) => res.data);
+};
+
+export const postPackage = (payload: any) => {
+  return baseURL
+    .post("/package_vendor", payload, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    })
+    .then((res) => res.data);
+};
+
+export const getMyPackage = (packageId: any) => {
+  return baseURL.get(`/package_vendor/listme`).then((res) => res.data);
 };
 
 export const getRatingList = () => {
@@ -113,6 +131,36 @@ export const getStateList = () => {
   return baseURL.get("/state").then((res) => res.data);
 };
 
-export const getCityList = () => {
-  return baseURL.get("/city").then((res) => res.data);
+export const getCityList = (cityId: any) => {
+  return baseURL.get(`/city/${cityId}`).then((res) => res.data);
+};
+
+export const getMyTodo = () => {
+  return baseURL.get(`/todo_me`).then((res) => res.data);
+};
+
+export const postTodo = (payload: any) => {
+  return baseURL.post(`/todo`, payload).then((res) => res.data);
+};
+
+export const updateTodo = (todoListId: any, payload: any) => {
+  return baseURL
+    .put(`/todo_list/${todoListId}`, payload)
+    .then((res) => res.data);
+};
+
+export const getTodoDetail = (todoId: any) => {
+  return baseURL.get(`/todo/${todoId}`).then((res) => res.data);
+};
+
+export const getMyBooking = (payload: any) => {
+  return baseURL.post(`/booking_me`, payload).then((res) => res.data);
+};
+
+export const getBookingDetail = (bookingId: any) => {
+  return baseURL.get(`/booking/${bookingId}`).then((res) => res.data);
+};
+
+export const updateBookingDetail = (bookingId: any, payload: any) => {
+  return baseURL.put(`/booking/${bookingId}`, payload).then((res) => res.data);
 };

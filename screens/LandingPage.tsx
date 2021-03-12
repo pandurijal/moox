@@ -11,9 +11,10 @@ const validationSchema = Yup.object().shape({
     .required("Email is required"),
 });
 
+import EditScreenInfo from "../components/EditScreenInfo";
 import { Text, View } from "../components/Themed";
 
-export default function ForgotPassword(props: any) {
+export default function LandingPage(props: any) {
   const [resMessage, setResMessage] = useState("");
   const [loading, setLoading] = useState(false);
 

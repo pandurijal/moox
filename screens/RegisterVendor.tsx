@@ -7,6 +7,7 @@ import {
   ScrollView,
   View,
   Text,
+  Iamge,
 } from "react-native";
 import Constants from "expo-constants";
 import * as Notifications from "expo-notifications";
@@ -103,163 +104,183 @@ function RegisterVendor(props: any) {
   };
 
   return (
-    <View style={styles.container}>
-      <Text>Sign Up as a Vendor</Text>
-      {/* <Text>{expoToken}</Text> */}
-      <View style={{ flexDirection: "row" }}>
-        <Text>If you are a customer, sign up </Text>
-        <TouchableOpacity
-          onPress={() => navigation.navigate("RegisterCustomer")}
+    <View
+      style={{
+        flex: 1,
+      }}
+    >
+      <ScrollView contentContainerStyle={[styles.container, { flexGrow: 1 }]}>
+        <Text style={{ fontSize: 18, fontWeight: "bold", color: "#680101" }}>
+          Sign Up as a Vendor
+        </Text>
+        {/* <Text>{expoToken}</Text> */}
+        <View style={{ flexDirection: "row" }}>
+          <Text>If you are a customer, sign up </Text>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("RegisterCustomer")}
+          >
+            <Text style={{ color: "#680101" }}>here</Text>
+          </TouchableOpacity>
+        </View>
+        <Formik
+          validationSchema={registerSchema}
+          initialValues={{
+            name: "",
+            email: "",
+            password: "",
+            retypePassword: "",
+          }}
+          onSubmit={handleSubmitRegistration}
         >
-          <Text>here</Text>
-        </TouchableOpacity>
-      </View>
-      <Formik
-        validationSchema={registerSchema}
-        initialValues={{
-          name: "",
-          email: "",
-          password: "",
-          retypePassword: "",
-        }}
-        onSubmit={handleSubmitRegistration}
-      >
-        {({
-          handleChange,
-          handleBlur,
-          handleSubmit,
-          values,
-          errors,
-          touched,
-        }) => (
-          <View>
-            <View style={styles.inputWrapper}>
-              <Text>Name</Text>
-              <TextInput
-                autoCapitalize="none"
-                onChangeText={handleChange("name")}
-                onBlur={handleBlur("name")}
-                value={values.name}
-                style={styles.textInput}
-              />
-              {touched.name && errors.name && (
-                <Text style={{ color: "red", fontSize: 12 }}>
-                  {errors.name}
-                </Text>
-              )}
-            </View>
-            <View style={styles.inputWrapper}>
-              <Text>Email</Text>
-              <TextInput
-                autoCapitalize="none"
-                onChangeText={handleChange("email")}
-                onBlur={handleBlur("email")}
-                value={values.email}
-                style={styles.textInput}
-              />
-              {touched.email && errors.email && (
-                <Text style={{ color: "red", fontSize: 12 }}>
-                  {errors.email}
-                </Text>
-              )}
-            </View>
-            <View style={styles.inputWrapper}>
-              <Text>Password</Text>
-              <TextInput
-                autoCapitalize="none"
-                onChangeText={handleChange("password")}
-                onBlur={handleBlur("password")}
-                value={values.password}
-                style={styles.textInput}
-                secureTextEntry
-              />
-              {touched.password && errors.password && (
-                <Text style={{ color: "red", fontSize: 12 }}>
-                  {errors.password}
-                </Text>
-              )}
-            </View>
-            <View style={styles.inputWrapper}>
-              <Text>Retype Password</Text>
-              <TextInput
-                autoCapitalize="none"
-                onChangeText={handleChange("retypePassword")}
-                onBlur={handleBlur("retypePassword")}
-                value={values.retypePassword}
-                style={styles.textInput}
-                secureTextEntry
-              />
-              {touched.retypePassword && errors.retypePassword && (
-                <Text style={{ color: "red", fontSize: 12 }}>
-                  {errors.retypePassword}
-                </Text>
-              )}
-            </View>
-            <View style={styles.inputWrapper}>
-              <TouchableOpacity
-                style={{
-                  backgroundColor: !loading ? "#c0392b" : "#bdc3c7",
-                  padding: 12,
-                  borderRadius: 6,
-                }}
-                onPress={handleSubmit}
-                disabled={loading}
-              >
-                <Text
+          {({
+            handleChange,
+            handleBlur,
+            handleSubmit,
+            values,
+            errors,
+            touched,
+          }) => (
+            <View>
+              <View style={styles.inputWrapper}>
+                <Text>Name</Text>
+                <TextInput
+                  autoCapitalize="none"
+                  onChangeText={handleChange("name")}
+                  onBlur={handleBlur("name")}
+                  value={values.name}
+                  style={styles.textInput}
+                />
+                {touched.name && errors.name && (
+                  <Text style={{ color: "red", fontSize: 12 }}>
+                    {errors.name}
+                  </Text>
+                )}
+              </View>
+              <View style={styles.inputWrapper}>
+                <Text>Email</Text>
+                <TextInput
+                  autoCapitalize="none"
+                  onChangeText={handleChange("email")}
+                  onBlur={handleBlur("email")}
+                  value={values.email}
+                  style={styles.textInput}
+                />
+                {touched.email && errors.email && (
+                  <Text style={{ color: "red", fontSize: 12 }}>
+                    {errors.email}
+                  </Text>
+                )}
+              </View>
+              <View style={styles.inputWrapper}>
+                <Text>Password</Text>
+                <TextInput
+                  autoCapitalize="none"
+                  onChangeText={handleChange("password")}
+                  onBlur={handleBlur("password")}
+                  value={values.password}
+                  style={styles.textInput}
+                  secureTextEntry
+                />
+                {touched.password && errors.password && (
+                  <Text style={{ color: "red", fontSize: 12 }}>
+                    {errors.password}
+                  </Text>
+                )}
+              </View>
+              <View style={styles.inputWrapper}>
+                <Text>Retype Password</Text>
+                <TextInput
+                  autoCapitalize="none"
+                  onChangeText={handleChange("retypePassword")}
+                  onBlur={handleBlur("retypePassword")}
+                  value={values.retypePassword}
+                  style={styles.textInput}
+                  secureTextEntry
+                />
+                {touched.retypePassword && errors.retypePassword && (
+                  <Text style={{ color: "red", fontSize: 12 }}>
+                    {errors.retypePassword}
+                  </Text>
+                )}
+              </View>
+              <View style={styles.inputWrapper}>
+                <TouchableOpacity
                   style={{
-                    color: "white",
-                    fontWeight: "bold",
-                    textAlign: "center",
+                    backgroundColor: !loading ? "#c0392b" : "#bdc3c7",
+                    marginTop: 12,
+                    padding: 12,
+                    borderRadius: 6,
                   }}
+                  onPress={handleSubmit}
+                  disabled={loading}
                 >
-                  Sign Up
-                </Text>
-              </TouchableOpacity>
+                  <Text
+                    style={{
+                      color: "white",
+                      fontWeight: "bold",
+                      textAlign: "center",
+                    }}
+                  >
+                    Sign Up
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
-        )}
-      </Formik>
-      <Text style={{ color: "red", fontSize: 12, textAlign: "center" }}>
-        {resMessage}
-      </Text>
-      <View
-        style={{
-          marginTop: 18,
-          alignItems: "center",
-        }}
-      >
-        <Text>Sign Up faster</Text>
-        <TouchableOpacity
+          )}
+        </Formik>
+        <Text style={{ color: "red", fontSize: 12, textAlign: "center" }}>
+          {resMessage}
+        </Text>
+        <View
           style={{
-            marginTop: 4,
+            marginTop: 12,
+            alignItems: "center",
+          }}
+        >
+          <Text>Sign Up faster</Text>
+          <TouchableOpacity
+            style={{
+              marginTop: 4,
+              flexDirection: "row",
+              justifyContent: "center",
+              alignItems: "center",
+              paddingVertical: 8,
+              paddingHorizontal: 16,
+              width: "35%",
+              borderWidth: 1,
+              borderRadius: 4,
+              borderColor: "#e0e0e0",
+            }}
+            onPress={_submitRegisterGoogle}
+          >
+            <Image
+              source={require("./../assets/images/icon-google.png")}
+              style={{
+                width: 20,
+                height: 20,
+                marginRight: 8,
+              }}
+            />
+            <Text style={{ fontWeight: "bold", fontSize: 16, marginLeft: 6 }}>
+              Google
+            </Text>
+          </TouchableOpacity>
+        </View>
+        <View
+          style={{
             flexDirection: "row",
             justifyContent: "center",
-            alignItems: "center",
-            padding: 6,
-            width: "35%",
-            borderWidth: 1,
-            borderRadius: 4,
+            marginTop: 18,
           }}
-          onPress={_submitRegisterGoogle}
         >
-          <Ionicons name="logo-google" size={20} />
-          <Text style={{ fontWeight: "bold", fontSize: 16, marginLeft: 6 }}>
-            Google
-          </Text>
-        </TouchableOpacity>
-      </View>
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "center",
-          marginTop: 18,
-        }}
-      >
-        <Text>Already have an account? </Text>
-        <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-          <Text>Login here</Text>
-        </TouchableOpacity>
-      </View>
+          <Text>Already have an account? </Text>
+          <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+            <Text style={{ fontWeight: "bold", color: "#680101" }}>
+              Login here
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
     </View>
   );
 }

@@ -7,7 +7,9 @@ import {
   Dimensions,
   Modal,
   Platform,
+  ActivityIndicator,
 } from "react-native";
+import { useIsFocused } from "@react-navigation/native";
 import Constants from "expo-constants";
 import * as Notifications from "expo-notifications";
 import { connect } from "react-redux";
@@ -73,10 +75,12 @@ Notifications.setNotificationHandler({
 
 function TabOneScreen(props: any) {
   const { navigation, auth } = props;
+  const isFocused = useIsFocused();
 
   const [modalMenu, setModalMenu] = useState(false);
   const [topVendor, setTopVendor] = useState([]);
   const [vendorTypeList, setVendorTypeList] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const [expoPushToken, setExpoPushToken] = useState("");
   const [notification, setNotification] = useState(false);
@@ -183,17 +187,27 @@ function TabOneScreen(props: any) {
 
   const _getPackageList = async () => {
     try {
+      setLoading(true);
       const res = await getPackageList();
       setTopVendor(res?.data);
     } catch (error) {
       console.log({ error, res: error.response });
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     // const _getPackageList = async () => {
-    //   const res = await getPackageList();
-    //   console.log({ res });
+    //   try {
+    //     setLoading(true);
+    //     const res = await getPackageList();
+    //     setTopVendor(res?.data);
+    //   } catch (error) {
+    //     console.log({ error, res: error.response });
+    //   } finally {
+    //     setLoading(false);
+    //   }
     // };
 
     _getPackageList();
@@ -202,11 +216,14 @@ function TabOneScreen(props: any) {
   useEffect(() => {
     const _getVendorTypeList = async () => {
       try {
+        setLoading(true);
         const res = await getVendorTypeList();
         console.log({ res });
         setVendorTypeList(res?.data);
       } catch (error) {
         console.log({ error, res: error.response });
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -298,17 +315,35 @@ function TabOneScreen(props: any) {
       >
         <View>
           <View style={{ padding: 8, flexDirection: "row" }}>
-            <Image
-              source={{
-                uri: `https://api.mooxevents.com/api/image/mooxapps/${item.user_avatar}`,
-              }}
-              style={{
-                width: 30,
-                height: 30,
-                borderRadius: 100,
-                marginRight: 8,
-              }}
-            />
+            {item?.user_avatar ? (
+              <Image
+                source={{
+                  uri: `https://api.mooxevents.com/api/image/mooxapps/${item.user_avatar}`,
+                }}
+                style={{
+                  width: 30,
+                  height: 30,
+                  borderRadius: 100,
+                  marginRight: 8,
+                }}
+              />
+            ) : (
+              <View
+                style={{
+                  backgroundColor: "#c0392b",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  width: 30,
+                  height: 30,
+                  borderRadius: 100,
+                  marginRight: 8,
+                }}
+              >
+                <Text style={{ color: "white", textTransform: "capitalize" }}>
+                  {item?.vendor_name?.charAt(0)}
+                </Text>
+              </View>
+            )}
             <View>
               <Text>{item.vendor_name}</Text>
               <Text>{item.vendorCategory}</Text>
@@ -389,86 +424,99 @@ function TabOneScreen(props: any) {
           <TextInput placeholder="Search" style={{ padding: 6 }} />
         </TouchableOpacity>
       </View>
-      <View style={{ marginVertical: 12 }}>
-        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-          <Text style={{ fontSize: 16, color: "#c0392b", fontWeight: "700" }}>
-            Vendor Category
-          </Text>
-          <TouchableOpacity onPress={() => navigation.navigate("CategoryList")}>
-            <Text>All</Text>
-          </TouchableOpacity>
+      {loading && (
+        <View style={{ marginVertical: 30 }}>
+          <ActivityIndicator size="large" color="#680101" />
         </View>
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-around",
-            marginTop: 4,
-          }}
-        >
-          {vendorTypeList.map((val, index) => {
-            if (index <= 4) {
-              return (
-                <View
-                  key={index}
-                  style={{
-                    justifyContent: "center",
-                    alignItems: "center",
-                    marginVertical: 8,
-                  }}
-                >
+      )}
+      {!loading && (
+        <View style={{ marginVertical: 12 }}>
+          <View
+            style={{ flexDirection: "row", justifyContent: "space-between" }}
+          >
+            <Text style={{ fontSize: 16, color: "#c0392b", fontWeight: "700" }}>
+              Vendor Category
+            </Text>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("CategoryList")}
+            >
+              <Text>All</Text>
+            </TouchableOpacity>
+          </View>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-around",
+              marginTop: 4,
+            }}
+          >
+            {vendorTypeList.map((val, index) => {
+              if (index <= 4) {
+                return (
                   <View
+                    key={index}
                     style={{
-                      width: 45,
-                      height: 45,
-                      borderRadius: 4,
+                      justifyContent: "center",
+                      alignItems: "center",
+                      marginVertical: 8,
                     }}
                   >
                     <View
                       style={{
-                        backgroundColor: "#680101",
-                        flex: 1,
-                        justifyContent: "center",
-                        alignItems: "center",
+                        width: 45,
+                        height: 45,
+                        borderRadius: 4,
                       }}
                     >
-                      <Image
-                        source={{
-                          uri: `https://api.mooxevents.com/api/image/mooxapps/${val.img_vendor_type}`,
-                        }}
+                      <View
                         style={{
-                          width: 36,
-                          height: 36,
-                          borderRadius: 100,
+                          backgroundColor: "#680101",
+                          flex: 1,
+                          justifyContent: "center",
+                          alignItems: "center",
                         }}
-                      />
+                      >
+                        <Image
+                          source={{
+                            uri: `https://api.mooxevents.com/api/image/mooxapps/${val.img_vendor_type}`,
+                          }}
+                          style={{
+                            width: 36,
+                            height: 36,
+                            borderRadius: 100,
+                          }}
+                        />
+                      </View>
                     </View>
+                    <Text>{val.name}</Text>
                   </View>
-                  <Text>{val.name}</Text>
-                </View>
-              );
-            }
-          })}
+                );
+              }
+            })}
+          </View>
         </View>
-      </View>
-      <View style={{ marginVertical: 12 }}>
-        <Text style={{ fontSize: 16, color: "#c0392b", fontWeight: "700" }}>
-          Explore Top Vendor
-        </Text>
+      )}
+      {!loading && (
         <View style={{ marginVertical: 12 }}>
-          <Carousel
-            // ref={(ref) => (this.carousel = ref)}
-            // layout={"default"}
-            data={topVendor}
-            renderItem={({ item }: any) => _renderSlideItem(item)}
-            sliderWidth={widthScreen}
-            itemWidth={widthScreen * 0.7}
-            contentContainerCustomStyle={{
-              paddingLeft: 6,
-            }}
-            useScrollView
-          />
+          <Text style={{ fontSize: 16, color: "#c0392b", fontWeight: "700" }}>
+            Explore Top Vendor
+          </Text>
+          <View style={{ marginVertical: 12 }}>
+            <Carousel
+              // ref={(ref) => (this.carousel = ref)}
+              // layout={"default"}
+              data={topVendor}
+              renderItem={({ item }: any) => _renderSlideItem(item)}
+              sliderWidth={widthScreen}
+              itemWidth={widthScreen * 0.7}
+              contentContainerCustomStyle={{
+                paddingLeft: 6,
+              }}
+              useScrollView
+            />
+          </View>
         </View>
-      </View>
+      )}
       {_renderModalMenu()}
     </View>
   );

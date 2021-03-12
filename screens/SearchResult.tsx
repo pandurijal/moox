@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   StyleSheet,
   Image,
@@ -7,53 +7,93 @@ import {
   ScrollView,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { getPackageSearch, getPackageList } from "./../services";
 
 import { Text, View } from "../components/Themed";
 
-const vendorTop = [
-  {
-    vendorName: "Rajhmir Event Organizer",
-    vendorCategory: "Astro",
-    name: "Regency Lagoon Resort",
-    image: require("./../assets/images/event-1.jpg"),
-    review: 100,
-    rating: 5.0,
-    price: 1300,
-  },
-  {
-    vendorName: "Rajhmir Event Organizer",
-    vendorCategory: "Astro",
-    name: "Regency Lagoon Resort",
-    review: 100,
-    rating: 5.0,
-    price: 1300,
-  },
-  {
-    vendorName: "Rajhmir Event Organizer",
-    vendorCategory: "Astro",
-    name: "Regency Lagoon Resort",
-    review: 100,
-    rating: 5.0,
-    price: 1300,
-  },
-  {
-    vendorName: "Rajhmir Event Organizer",
-    vendorCategory: "Astro",
-    name: "Regency Lagoon Resort",
-    review: 100,
-    rating: 5.0,
-    price: 1300,
-  },
-];
+// const vendorTop = [
+//   {
+//     vendorName: "Rajhmir Event Organizer",
+//     vendorCategory: "Astro",
+//     name: "Regency Lagoon Resort",
+//     image: require("./../assets/images/event-1.jpg"),
+//     review: 100,
+//     rating: 5.0,
+//     price: 1300,
+//   },
+//   {
+//     vendorName: "Rajhmir Event Organizer",
+//     vendorCategory: "Astro",
+//     name: "Regency Lagoon Resort",
+//     review: 100,
+//     rating: 5.0,
+//     price: 1300,
+//   },
+//   {
+//     vendorName: "Rajhmir Event Organizer",
+//     vendorCategory: "Astro",
+//     name: "Regency Lagoon Resort",
+//     review: 100,
+//     rating: 5.0,
+//     price: 1300,
+//   },
+//   {
+//     vendorName: "Rajhmir Event Organizer",
+//     vendorCategory: "Astro",
+//     name: "Regency Lagoon Resort",
+//     review: 100,
+//     rating: 5.0,
+//     price: 1300,
+//   },
+// ];
 
 export default function SearchResult(props: any) {
   const { navigation } = props;
+
+  const [loading, setLoading] = useState(false);
+  const [searchResult, setSearchResult] = useState();
+
+  useEffect(() => {
+    const _fetchPackageSearch = async () => {
+      try {
+        const payload = {
+          id_city: null,
+          package_name: "",
+        };
+        const res = await getPackageSearch(payload);
+        console.log({ payload, res });
+      } catch (error) {
+        console.log({ error, res: error.response });
+        console.error("search detail", error);
+      }
+    };
+
+    _fetchPackageSearch();
+  }, []);
+
+  // useEffect(() => {
+  //   const _getPackageList = async () => {
+  //     try {
+  //       setLoading(true);
+  //       const res = await getPackageList();
+  //       console.log({ res });
+  //       setSearchResult(res?.data);
+  //       // setTopVendor(res?.data);
+  //     } catch (error) {
+  //       console.log({ error, res: error.response });
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   _getPackageList();
+  // }, []);
 
   const _renderSearchBar = () => {
     return (
       <View
         style={{
-          backgroundColor: "red",
+          backgroundColor: "#680101",
           paddingHorizontal: 20,
           paddingVertical: 8,
         }}
@@ -79,44 +119,67 @@ export default function SearchResult(props: any) {
     return (
       <View style={{ width: "48%" }}>
         <TouchableOpacity
-          onPress={() => navigation.navigate("DetailPackage")}
+          onPress={() =>
+            navigation.navigate("DetailPackage", { packageId: item.id })
+          }
           style={{
             width: "100%",
             borderRadius: 6,
             marginVertical: 6,
             elevation: 2,
-            overflow: "hidden",
           }}
         >
           <View>
             <View style={{ padding: 8, flexDirection: "row" }}>
-              <Image
-                source={require("./../assets/images/avatar-1.jpg")}
-                style={{
-                  width: 30,
-                  height: 30,
-                  borderRadius: 100,
-                  marginRight: 8,
-                }}
-              />
+              {item?.user_avatar ? (
+                <Image
+                  source={{
+                    uri: `https://api.mooxevents.com/api/image/mooxapps/${item.user_avatar}`,
+                  }}
+                  style={{
+                    width: 30,
+                    height: 30,
+                    borderRadius: 100,
+                    marginRight: 8,
+                  }}
+                />
+              ) : (
+                <View
+                  style={{
+                    backgroundColor: "#c0392b",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    width: 30,
+                    height: 30,
+                    borderRadius: 100,
+                    marginRight: 8,
+                  }}
+                >
+                  <Text style={{ color: "white", textTransform: "capitalize" }}>
+                    {item?.vendor_name?.charAt(0)}
+                  </Text>
+                </View>
+              )}
               <View>
-                <Text>{item.vendorName}</Text>
+                <Text>{item.vendor_name}</Text>
                 <Text>{item.vendorCategory}</Text>
               </View>
             </View>
             <Image
-              source={require("./../assets/images/event-1.jpg")}
+              source={{
+                uri: `https://api.mooxevents.com/api/image/mooxapps/${item.img_package}`,
+              }}
               style={{ width: "100%", height: 90 }}
             />
             <View style={{ padding: 8 }}>
-              <Text>{item.name}</Text>
+              <Text>{item.name_item}</Text>
               <View
                 style={{
                   flexDirection: "row",
                   justifyContent: "space-between",
                 }}
               >
-                <Text>Reviewed({item.review})</Text>
+                <Text>Reviewed({item.rating_count})</Text>
                 <View
                   style={{
                     flexDirection: "row",
@@ -125,7 +188,7 @@ export default function SearchResult(props: any) {
                   }}
                 >
                   <Ionicons name="star" color="#f1c40f" />
-                  <Text>{item.rating}</Text>
+                  <Text>{item.rating_value}</Text>
                 </View>
               </View>
               <View
@@ -161,7 +224,7 @@ export default function SearchResult(props: any) {
           marginVertical: 12,
         }}
       >
-        {vendorTop.map((val) => _renderCard(val))}
+        {searchResult?.map((val) => _renderCard(val))}
       </View>
     </ScrollView>
   );

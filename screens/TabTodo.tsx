@@ -1,32 +1,63 @@
-import * as React from "react";
-import { TouchableOpacity, StyleSheet } from "react-native";
+import React, { useState, useEffect } from "react";
+import { TouchableOpacity, StyleSheet, ActivityIndicator } from "react-native";
+import { useIsFocused } from "@react-navigation/native";
+import { getMyTodo } from "./../services";
 
-import EditScreenInfo from "../components/EditScreenInfo";
 import { Text, View } from "../components/Themed";
 
 export default function TabTodo(props: any) {
   const { navigation } = props;
+  const isFocused = useIsFocused();
+
+  const [loading, setLoading] = useState(false);
+  const [todoList, setTodoList] = useState([]);
+
+  useEffect(() => {
+    const _getMyTodoList = async () => {
+      try {
+        setLoading(true);
+        const res = await getMyTodo();
+        console.log({ res });
+        setTodoList(res?.data);
+      } catch (error) {
+        console.log({ error, res: error.response });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    _getMyTodoList();
+  }, [isFocused]);
+
   return (
     <View style={styles.container}>
-      <TouchableOpacity
-        onPress={() => navigation.navigate("TodoDetail")}
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          margin: 12,
-          padding: 12,
-          elevation: 2,
-          borderRadius: 8,
-        }}
-      >
-        <View>
-          <Text>My Birthday</Text>
-          <Text>5 Todos</Text>
+      {loading && (
+        <View style={{ marginVertical: 30 }}>
+          <ActivityIndicator size="large" color="#680101" />
         </View>
-        <View>
-          <Text>3 Done</Text>
-        </View>
-      </TouchableOpacity>
+      )}
+      {todoList?.map((val, index) => (
+        <TouchableOpacity
+          key={index}
+          onPress={() => navigation.navigate("TodoDetail", { todoId: val.id })}
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            margin: 12,
+            padding: 12,
+            elevation: 2,
+            borderRadius: 8,
+          }}
+        >
+          <View>
+            <Text>{val.name}</Text>
+            <Text>{val.total_todo} Todos</Text>
+          </View>
+          <View>
+            <Text>{val.done_todo} Done</Text>
+          </View>
+        </TouchableOpacity>
+      ))}
       <TouchableOpacity
         onPress={() => navigation.navigate("TodoForm")}
         style={{
@@ -35,9 +66,14 @@ export default function TabTodo(props: any) {
           borderWidth: 1,
           padding: 8,
           margin: 12,
+          borderColor: "#680101",
         }}
       >
-        <Text style={{ textAlign: "center" }}>+ Add Todo</Text>
+        <Text
+          style={{ textAlign: "center", color: "#680101", fontWeight: "bold" }}
+        >
+          + Add Todo
+        </Text>
       </TouchableOpacity>
       {/* <Text style={styles.title}>Tab Three</Text>
       <View

@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   TextInput,
   Platform,
+  Image,
 } from "react-native";
 import Constants from "expo-constants";
 import * as Notifications from "expo-notifications";
@@ -138,7 +139,9 @@ function Login(props: any) {
 
   return (
     <View style={styles.container}>
-      <Text>Welcome to Moox Events</Text>
+      <Text style={{ fontSize: 18, fontWeight: "bold", color: "#680101" }}>
+        Welcome to Moox Events
+      </Text>
       {/* <Text>{expoToken}</Text> */}
       <Formik
         validationSchema={loginSchema}
@@ -217,7 +220,7 @@ function Login(props: any) {
       </Text>
       <View style={{ alignItems: "flex-end" }}>
         <TouchableOpacity onPress={() => navigation.navigate("ForgotPassword")}>
-          <Text>Forgot Password?</Text>
+          <Text style={{ color: "#680101" }}>Forgot Password?</Text>
         </TouchableOpacity>
       </View>
       <View
@@ -233,14 +236,23 @@ function Login(props: any) {
             flexDirection: "row",
             justifyContent: "center",
             alignItems: "center",
-            padding: 6,
+            paddingVertical: 8,
+            paddingHorizontal: 16,
             width: "35%",
             borderWidth: 1,
             borderRadius: 4,
+            borderColor: "#e0e0e0",
           }}
           onPress={_submitLoginGoogle}
         >
-          <Ionicons name="logo-google" size={20} />
+          <Image
+            source={require("./../assets/images/icon-google.png")}
+            style={{
+              width: 20,
+              height: 20,
+              marginRight: 8,
+            }}
+          />
           <Text style={{ fontWeight: "bold", fontSize: 16, marginLeft: 6 }}>
             Google
           </Text>
@@ -264,7 +276,7 @@ function Login(props: any) {
           <TouchableOpacity
             onPress={() => navigation.navigate("RegisterCustomer")}
           >
-            <Text>Customer</Text>
+            <Text style={{ fontWeight: "bold" }}>Customer</Text>
           </TouchableOpacity>
           <View
             style={{ marginHorizontal: 8, borderRightWidth: 1, height: 12 }}
@@ -272,7 +284,7 @@ function Login(props: any) {
           <TouchableOpacity
             onPress={() => navigation.navigate("RegisterVendor")}
           >
-            <Text>Vendor</Text>
+            <Text style={{ fontWeight: "bold" }}>Vendor</Text>
           </TouchableOpacity>
         </View>
       </View>

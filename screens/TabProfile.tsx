@@ -3,11 +3,14 @@ import { connect } from "react-redux";
 import { Pressable, StyleSheet, TouchableOpacity } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { userLogoutAction } from "./../store/actions/userAction";
+import { Ionicons } from "@expo/vector-icons";
+import { getMyPackage } from "./../services";
 
 import { Text, View } from "../components/Themed";
 
 function TabProfile(props: any) {
   const [tab, setTab] = useState("account");
+  const [packageDetail, setPackageDetail] = useState([]);
 
   const { navigation, userLogoutAction, auth } = props;
 
@@ -25,6 +28,23 @@ function TabProfile(props: any) {
 
   //   getToken();
   // }, []);
+
+  useEffect(() => {
+    const _getMyPackage = async () => {
+      try {
+        const payload = {
+          status: tab,
+        };
+        const res = await getMyPackage(payload);
+        console.log("my package", res);
+        setPackageDetail(res?.data?.[0]);
+      } catch (error) {
+        console.error("my package", error);
+      }
+    };
+
+    _getMyPackage();
+  }, [tab]);
 
   const menuList = [
     // { name: "Vendor", onPressFunc: () => navigation.navigate("ProfileVendor") },
@@ -137,35 +157,80 @@ function TabProfile(props: any) {
       )}
 
       {tab === "vendor" && (
-        <View
-          style={[
-            styles.container,
-            {
-              flex: 1,
-              justifyContent: "center",
-              alignItems: "center",
-              height: "100%",
-            },
-          ]}
-        >
-          <Text style={{ fontSize: 20, fontWeight: "600" }}>
-            You have no package
-          </Text>
-          <Pressable
-            onPress={() => navigation.navigate("PackageForm")}
-            style={{
-              backgroundColor: "#c0392b",
-              justifyContent: "center",
-              alignItems: "center",
-              borderRadius: 6,
-              marginVertical: 8,
-              paddingHorizontal: 16,
-              paddingVertical: 8,
-            }}
-          >
-            <Text style={{ color: "white" }}>Create Package</Text>
-          </Pressable>
-        </View>
+        <>
+          {!packageDetail ? (
+            <View style={[styles.container, {}]}>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <Text style={{ fontWeight: "bold" }}>Package Detail</Text>
+                <Text>Edit</Text>
+              </View>
+              <Text>{packageDetail?.name_item}</Text>
+
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  marginVertical: 4,
+                }}
+              >
+                <Ionicons size={18} name="cash-outline" color="#c0392b" />
+                <Text style={{ color: "#c0392b" }}>{packageDetail?.price}</Text>
+              </View>
+
+              <View style={{ paddingVertical: 8 }}>
+                <View>
+                  <Text>Description</Text>
+                  <Text style={{ marginVertical: 8 }}>
+                    {packageDetail?.desc}
+                  </Text>
+                </View>
+                <View>
+                  <Text>Event Address</Text>
+                  <Text>{packageDetail?.address}</Text>
+                  <Text>
+                    {packageDetail?.city_name} - {packageDetail?.state_name}
+                  </Text>
+                </View>
+              </View>
+            </View>
+          ) : (
+            <View
+              style={[
+                styles.container,
+                {
+                  flex: 1,
+                  justifyContent: "center",
+                  alignItems: "center",
+                  height: "100%",
+                },
+              ]}
+            >
+              <Text style={{ fontSize: 20, fontWeight: "600" }}>
+                You have no package
+              </Text>
+              <Pressable
+                onPress={() => navigation.navigate("PackageForm")}
+                style={{
+                  backgroundColor: "#c0392b",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  borderRadius: 6,
+                  marginVertical: 8,
+                  paddingHorizontal: 16,
+                  paddingVertical: 8,
+                }}
+              >
+                <Text style={{ color: "white" }}>Create Package</Text>
+              </Pressable>
+            </View>
+          )}
+        </>
       )}
     </>
   );

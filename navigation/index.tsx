@@ -32,6 +32,8 @@ import CategoryList from "./../screens/CategoryList";
 import TodoForm from "./../screens/TodoForm";
 import TodoDetail from "./../screens/TodoDetail";
 import Notifications from "./../screens/Notifications";
+import LandingPage from "./../screens/LandingPage";
+import BookingDetail from "./../screens/BookingDetail";
 
 const MyTheme = {
   ...DefaultTheme,
@@ -123,6 +125,11 @@ const RootNavigator = connect((state: any) => ({
             name="PackageForm"
             component={PackageForm}
             options={{ headerTitle: "Create Package" }}
+          />
+          <Stack.Screen
+            name="BookingDetail"
+            component={BookingDetail}
+            options={{ headerTitle: "Detail Booking" }}
           />
           <Stack.Screen
             name="ListReview"

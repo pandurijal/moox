@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from "react";
 import moment from "moment";
-import { Button, StyleSheet, TouchableOpacity } from "react-native";
+import Modal from "react-native-modal";
+import {
+  Button,
+  Pressable,
+  StyleSheet,
+  TouchableOpacity,
+  TextInput,
+} from "react-native";
 import { getMyEventDetail, getMyEventVendor } from "./../services";
 
 import { Text, View } from "../components/Themed";
@@ -30,6 +37,10 @@ export default function DetailEvent(props: any) {
   const [eventDetail, setEventDetail] = useState({});
   const [eventVendor, setEventVendor] = useState([]);
   const [tab, setTab] = useState("waiting");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [modalReview, setModalReview] = useState(true);
+  const [messageReview, setMessageReview] = useState("");
 
   const { navigation, route } = props;
 
@@ -67,6 +78,8 @@ export default function DetailEvent(props: any) {
 
     _getMyEventVendor();
   }, [tab]);
+
+  const handleSubmitReview = () => {};
 
   return (
     <View style={styles.container}>
@@ -111,6 +124,7 @@ export default function DetailEvent(props: any) {
               marginVertical: 8,
               elevation: 2,
               padding: 8,
+              paddingHorizontal: 12,
               borderRadius: 6,
             }}
           >
@@ -120,7 +134,29 @@ export default function DetailEvent(props: any) {
             </View>
             <View>
               <Text style={{ textAlign: "right" }}>Status</Text>
-              <Text>{val.status}</Text>
+              <Text
+                style={{
+                  textAlign: "right",
+                  textTransform: "capitalize",
+                  fontWeight: "bold",
+                }}
+              >
+                {val.status}
+              </Text>
+              {val?.status === "done" && (
+                <Pressable
+                  style={{
+                    borderWidth: 1,
+                    borderColor: "green",
+                    paddingHorizontal: 12,
+                    paddingVertical: 4,
+                    marginTop: 4,
+                    borderRadius: 6,
+                  }}
+                >
+                  <Text style={{ color: "green" }}>Review</Text>
+                </Pressable>
+              )}
             </View>
           </View>
         ))}
@@ -139,18 +175,56 @@ export default function DetailEvent(props: any) {
                 {eventDetail.date ? moment(eventDetail.date).format("LL") : ""}
               </Text>
             </View>
-            {/* <Text>General Event</Text> */}
           </View>
           <Text style={{ marginVertical: 8 }}>{eventDetail.description}</Text>
-          {/* <View>
-            <Text>Event Address</Text>
-            <Text>{eventDetail.address}</Text>
-          </View> */}
         </View>
       </View>
-      {/* <Text style={styles.title}>Tab Two</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <EditScreenInfo path="/screens/DetailEvent.tsx" /> */}
+      <Modal
+        isVisible={modalReview}
+        // onBackButtonPress={() => setModalBooking(false)}
+        // onBackdropPress={() => setModalBooking(false)}
+        style={{
+          height: "50%",
+          // backgroundColor: "blue",
+        }}
+      >
+        <View
+          style={{
+            paddingHorizontal: 12,
+            paddingTop: 12,
+            paddingBottom: 18,
+            borderRadius: 4,
+          }}
+        >
+          <View>
+            <Text>Message</Text>
+            <TextInput
+              value={messageReview}
+              onChangeText={(val) => setMessageReview(val)}
+              style={styles.textInput}
+            />
+          </View>
+          <Pressable
+            style={{
+              backgroundColor: !isSubmitting ? "#c0392b" : "#bdc3c7",
+              padding: 12,
+              borderRadius: 6,
+            }}
+            onPress={handleSubmit}
+            disabled={isSubmitting}
+          >
+            <Text
+              style={{
+                color: "white",
+                fontWeight: "bold",
+                textAlign: "center",
+              }}
+            >
+              Submit Review
+            </Text>
+          </Pressable>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -167,5 +241,14 @@ const styles = StyleSheet.create({
     marginVertical: 30,
     height: 1,
     width: "80%",
+  },
+  inputWrapper: {
+    marginVertical: 8,
+  },
+  textInput: {
+    borderWidth: 1,
+    padding: 6,
+    borderRadius: 8,
+    marginTop: 4,
   },
 });

@@ -8,6 +8,7 @@ import {
   View,
   Text,
   Platform,
+  Image,
 } from "react-native";
 import Constants from "expo-constants";
 import * as Notifications from "expo-notifications";
@@ -149,14 +150,16 @@ function RegisterCustomer(props: any) {
       }}
     >
       <ScrollView contentContainerStyle={[styles.container, { flexGrow: 1 }]}>
-        <Text>Sign Up as a Customer</Text>
+        <Text style={{ fontSize: 18, fontWeight: "bold", color: "#680101" }}>
+          Sign Up as a Customer
+        </Text>
         {/* <Text>{expoToken}</Text> */}
-        <View style={{ flexDirection: "row" }}>
+        <View style={{ flexDirection: "row", marginVertical: 12 }}>
           <Text>If you are a customer, sign up </Text>
           <TouchableOpacity
             onPress={() => navigation.navigate("RegisterVendor")}
           >
-            <Text>here</Text>
+            <Text style={{ color: "#680101" }}>here</Text>
           </TouchableOpacity>
         </View>
         <Formik
@@ -246,6 +249,7 @@ function RegisterCustomer(props: any) {
                     backgroundColor: !loading ? "#c0392b" : "#bdc3c7",
                     padding: 12,
                     borderRadius: 6,
+                    marginTop: 12,
                   }}
                   onPress={handleSubmit}
                   disabled={loading}
@@ -269,7 +273,7 @@ function RegisterCustomer(props: any) {
         </Text>
         <View
           style={{
-            marginTop: 18,
+            marginTop: 12,
             alignItems: "center",
           }}
         >
@@ -280,14 +284,23 @@ function RegisterCustomer(props: any) {
               flexDirection: "row",
               justifyContent: "center",
               alignItems: "center",
-              padding: 6,
+              paddingVertical: 8,
+              paddingHorizontal: 16,
               width: "35%",
               borderWidth: 1,
               borderRadius: 4,
+              borderColor: "#e0e0e0",
             }}
             onPress={_submitRegisterGoogle}
           >
-            <Ionicons name="logo-google" size={20} />
+            <Image
+              source={require("./../assets/images/icon-google.png")}
+              style={{
+                width: 20,
+                height: 20,
+                marginRight: 8,
+              }}
+            />
             <Text style={{ fontWeight: "bold", fontSize: 16, marginLeft: 6 }}>
               Google
             </Text>
@@ -302,7 +315,9 @@ function RegisterCustomer(props: any) {
         >
           <Text>Already have an account? </Text>
           <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-            <Text>Login here</Text>
+            <Text style={{ fontWeight: "bold", color: "#680101" }}>
+              Login here
+            </Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

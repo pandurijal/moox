@@ -97,12 +97,14 @@ export default function DetailPackage(props: any) {
   return (
     <ScrollView>
       <Image
-        source={require("./../assets/images/event-1.jpg")}
+        source={{
+          uri: `https://api.mooxevents.com/api/image/mooxapps/${packageDetail?.img_package}`,
+        }}
         style={{ width: "100%", height: 200 }}
       />
       <View style={styles.container}>
         <View>
-          <Text style={{ textTransform: "capitalize" }}>
+          <Text style={{ textTransform: "capitalize", fontSize: 18 }}>
             {packageDetail?.name_item}
           </Text>
           <View
@@ -111,7 +113,9 @@ export default function DetailPackage(props: any) {
               justifyContent: "space-between",
             }}
           >
-            <Text>Reviewed ({packageDetail?.rating_count})</Text>
+            <Text style={{ color: "gray" }}>
+              Reviewed ({packageDetail?.rating_count})
+            </Text>
             <View
               style={{
                 flexDirection: "row",
@@ -125,13 +129,23 @@ export default function DetailPackage(props: any) {
           </View>
           <View
             style={{
-              flexDirection: "row",
-              alignItems: "center",
-              marginVertical: 4,
+              marginVertical: 8,
             }}
           >
-            <Ionicons size={18} name="cash-outline" color="#c0392b" />
-            <Text style={{ color: "#c0392b" }}>{packageDetail?.price}</Text>
+            <Text style={{ fontSize: 12 }}>Starting from</Text>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+              }}
+            >
+              <Ionicons size={18} name="cash-outline" color="#c0392b" />
+              <Text
+                style={{ color: "#c0392b", marginLeft: 8, fontWeight: "bold" }}
+              >
+                {packageDetail?.price}
+              </Text>
+            </View>
           </View>
           <View
             style={{
@@ -142,18 +156,41 @@ export default function DetailPackage(props: any) {
               marginVertical: 12,
             }}
           >
-            <Image
-              source={require("./../assets/images/avatar-1.jpg")}
-              style={{
-                width: 30,
-                height: 30,
-                borderRadius: 100,
-                marginRight: 8,
-              }}
-            />
+            {packageDetail?.user_avatar ? (
+              <Image
+                source={{
+                  uri: `https://api.mooxevents.com/api/image/mooxapps/${packageDetail?.user_avatar}`,
+                }}
+                style={{
+                  width: 30,
+                  height: 30,
+                  borderRadius: 100,
+                  marginRight: 8,
+                }}
+              />
+            ) : (
+              <View
+                style={{
+                  backgroundColor: "#c0392b",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  width: 30,
+                  height: 30,
+                  borderRadius: 100,
+                  marginRight: 8,
+                }}
+              >
+                <Text style={{ color: "white", textTransform: "capitalize" }}>
+                  {packageDetail?.vendor_name?.charAt(0)}
+                </Text>
+              </View>
+            )}
+
             <View>
-              <Text>{packageDetail?.vendor_name}</Text>
-              <Text>{packageDetail?.vendor_name}</Text>
+              <Text style={{ textTransform: "capitalize" }}>
+                {packageDetail?.vendor_name}
+              </Text>
+              <Text>{packageDetail?.type_name}</Text>
             </View>
           </View>
         </View>
@@ -163,19 +200,19 @@ export default function DetailPackage(props: any) {
             width: widthScreen,
             height: 12,
             marginHorizontal: -20,
-            backgroundColor: "silver",
+            backgroundColor: "#e0e0e0",
           }}
         />
 
         <View style={{ paddingVertical: 8 }}>
           <View>
-            <Text>Description</Text>
+            <Text style={{ fontSize: 16 }}>Description</Text>
             <Text style={{ marginVertical: 8 }}>{packageDetail?.desc}</Text>
           </View>
           <View>
-            <Text>Event Address</Text>
+            <Text style={{ fontSize: 16 }}>Event Address</Text>
             <Text>{packageDetail?.address}</Text>
-            <Text>
+            <Text style={{ marginVertical: 4 }}>
               {packageDetail?.city_name} - {packageDetail?.state_name}
             </Text>
           </View>
@@ -186,59 +223,66 @@ export default function DetailPackage(props: any) {
             width: widthScreen,
             height: 12,
             marginHorizontal: -20,
-            backgroundColor: "silver",
+            backgroundColor: "#e0e0e0",
           }}
         />
 
-        <View style={{ paddingVertical: 8 }}>
-          <View
-            style={{ flexDirection: "row", justifyContent: "space-between" }}
-          >
-            <Text>Review ({ratingDetail?.length})</Text>
-            {/* <TouchableOpacity onPress={() => navigation.navigate("ListReview")}>
-              <Text>All</Text>
-            </TouchableOpacity> */}
-          </View>
-          {ratingDetail?.map((val) => (
-            <View>
+        {ratingDetail?.length ? (
+          <>
+            <View style={{ paddingVertical: 8 }}>
               <View
                 style={{
                   flexDirection: "row",
-                  alignItems: "center",
-                  marginVertical: 12,
+                  justifyContent: "space-between",
                 }}
               >
-                <Image
-                  source={require("./../assets/images/avatar-1.jpg")}
-                  style={{
-                    width: 30,
-                    height: 30,
-                    borderRadius: 100,
-                    marginRight: 8,
-                  }}
-                />
-                <View>
-                  <Text>{val.name}</Text>
-                  <Text>
-                    {[...Array(val.rating)].map((star) => (
-                      <Ionicons name="star" color="#f1c40f" />
-                    ))}
-                  </Text>
-                </View>
+                <Text>Review ({ratingDetail?.length})</Text>
+                {/* <TouchableOpacity onPress={() => navigation.navigate("ListReview")}>
+              <Text>All</Text>
+            </TouchableOpacity> */}
               </View>
-              <Text>{val.message}</Text>
+              {ratingDetail?.map((val) => (
+                <View>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      marginVertical: 12,
+                    }}
+                  >
+                    <Image
+                      source={require("./../assets/images/avatar-1.jpg")}
+                      style={{
+                        width: 30,
+                        height: 30,
+                        borderRadius: 100,
+                        marginRight: 8,
+                      }}
+                    />
+                    <View>
+                      <Text>{val.name}</Text>
+                      <Text>
+                        {[...Array(val.rating)].map((star) => (
+                          <Ionicons name="star" color="#f1c40f" />
+                        ))}
+                      </Text>
+                    </View>
+                  </View>
+                  <Text>{val.message}</Text>
+                </View>
+              ))}
             </View>
-          ))}
-        </View>
 
-        <View
-          style={{
-            width: widthScreen,
-            height: 12,
-            marginHorizontal: -20,
-            backgroundColor: "silver",
-          }}
-        />
+            <View
+              style={{
+                width: widthScreen,
+                height: 12,
+                marginHorizontal: -20,
+                backgroundColor: "#e0e0e0",
+              }}
+            />
+          </>
+        ) : null}
 
         <View style={{ paddingVertical: 8 }}>
           <TouchableOpacity
