@@ -152,7 +152,7 @@ function TabTwoNavigator() {
               color="#fff"
               size={24}
               style={{ marginRight: 8 }}
-              onPress={() => navigation.navigate("CreateEvent")}
+              onPress={() => navigation.navigate("EventForm")}
             />
           ),
         })}

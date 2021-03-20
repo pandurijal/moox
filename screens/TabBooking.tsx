@@ -4,9 +4,10 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Pressable,
+  Image,
 } from "react-native";
 import moment from "moment";
-import { getMyBooking } from "./../services";
+import { getMyProfile, getMyBooking } from "./../services";
 import { useIsFocused } from "@react-navigation/native";
 
 import { Text, View } from "../components/Themed";
@@ -14,9 +15,29 @@ import { Text, View } from "../components/Themed";
 export default function TabBooking(props: any) {
   const { navigation } = props;
   const isFocused = useIsFocused();
+
+  const [myProfile, setMyProfile] = useState({});
+
   const [tab, setTab] = useState("waiting");
   const [bookingList, setBookingList] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  const _getMyProfile = async () => {
+    try {
+      setLoading(true);
+      const res = await getMyProfile();
+      console.log("profile", res);
+      setMyProfile(res?.status);
+    } catch (error) {
+      console.log({ error, res: error.response });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    _getMyProfile();
+  }, [isFocused]);
 
   useEffect(() => {
     const _getMyBooking = async () => {
@@ -40,6 +61,31 @@ export default function TabBooking(props: any) {
 
   return (
     <>
+      {!loading && !myProfile?.phone && (
+        <Pressable onPress={() => navigation.navigate("ProfileUpdate")}>
+          <View
+            style={{
+              borderColor: "#680101",
+              borderWidth: 1,
+              marginTop: 8,
+              borderRadius: 6,
+              padding: 8,
+              marginHorizontal: 20,
+            }}
+          >
+            <Text>
+              Please complete your profile{" "}
+              <Text
+                style={{
+                  color: "#680101",
+                }}
+              >
+                here.
+              </Text>
+            </Text>
+          </View>
+        </Pressable>
+      )}
       <View
         style={{
           flexDirection: "row",
@@ -77,6 +123,7 @@ export default function TabBooking(props: any) {
           <ActivityIndicator size="large" color="#680101" />
         </View>
       )}
+
       {bookingList?.length ? (
         bookingList?.map((val) => (
           <Pressable

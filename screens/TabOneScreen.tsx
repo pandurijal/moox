@@ -5,10 +5,14 @@ import {
   TouchableOpacity,
   Image,
   Dimensions,
-  Modal,
+  // Modal,
   Platform,
   ActivityIndicator,
+  Pressable,
+  Text,
+  View,
 } from "react-native";
+import Modal from "react-native-modal";
 import { useIsFocused } from "@react-navigation/native";
 import Constants from "expo-constants";
 import * as Notifications from "expo-notifications";
@@ -16,9 +20,12 @@ import { connect } from "react-redux";
 import { Ionicons } from "@expo/vector-icons";
 import Carousel from "react-native-snap-carousel";
 import { userLogoutAction } from "./../store/actions/userAction";
-import { getPackageList, getVendorTypeList } from "./../services";
-
-import { Text, View } from "../components/Themed";
+import {
+  getMyProfile,
+  getPackageList,
+  getVendorTypeList,
+  getNotifCount,
+} from "./../services";
 
 const widthScreen = Dimensions.get("window").width;
 
@@ -74,12 +81,15 @@ Notifications.setNotificationHandler({
 });
 
 function TabOneScreen(props: any) {
-  const { navigation, auth } = props;
+  const { navigation, auth, userLogoutAction } = props;
   const isFocused = useIsFocused();
+
+  const [myProfile, setMyProfile] = useState({});
 
   const [modalMenu, setModalMenu] = useState(false);
   const [topVendor, setTopVendor] = useState([]);
   const [vendorTypeList, setVendorTypeList] = useState([]);
+  const [notifCount, setNotifCount] = useState(0);
   const [loading, setLoading] = useState(false);
 
   const [expoPushToken, setExpoPushToken] = useState("");
@@ -146,9 +156,9 @@ function TabOneScreen(props: any) {
 
   const menuList = [
     {
-      name: "Setting",
+      name: "Change Password",
       onPressFunc: () => {
-        navigation.navigate("ProfileSetting");
+        navigation.navigate("ChangePassword");
         setModalMenu(false);
       },
     },
@@ -185,6 +195,27 @@ function TabOneScreen(props: any) {
 
   const userName = auth?.userData?.data?.name;
 
+  const _getNotifCount = async () => {
+    try {
+      const res = await getNotifCount();
+      console.log("notif", res);
+      setNotifCount(res?.count_notify);
+      // setNotifCount(9);
+    } catch (error) {
+      console.log({ error, res: error.response });
+    }
+  };
+
+  const _getMyProfile = async () => {
+    try {
+      const res = await getMyProfile();
+      console.log("profile", res);
+      setMyProfile(res?.status);
+    } catch (error) {
+      console.log({ error, res: error.response });
+    }
+  };
+
   const _getPackageList = async () => {
     try {
       setLoading(true);
@@ -198,18 +229,11 @@ function TabOneScreen(props: any) {
   };
 
   useEffect(() => {
-    // const _getPackageList = async () => {
-    //   try {
-    //     setLoading(true);
-    //     const res = await getPackageList();
-    //     setTopVendor(res?.data);
-    //   } catch (error) {
-    //     console.log({ error, res: error.response });
-    //   } finally {
-    //     setLoading(false);
-    //   }
-    // };
+    _getMyProfile();
+    _getNotifCount();
+  }, [isFocused]);
 
+  useEffect(() => {
     _getPackageList();
   }, []);
 
@@ -233,9 +257,15 @@ function TabOneScreen(props: any) {
   const _renderModalMenu = () => {
     return (
       <Modal
-        visible={modalMenu}
-        transparent
-        onRequestClose={() => setModalMenu(false)}
+        isVisible={modalMenu}
+        onBackButtonPress={() => setModalMenu(false)}
+        onBackdropPress={() => setModalMenu(false)}
+        animationIn="slideInLeft"
+        animationOut="slideOutLeft"
+        style={{
+          marginVertical: -20,
+          paddingVertical: 20,
+        }}
       >
         <View
           style={{
@@ -243,6 +273,7 @@ function TabOneScreen(props: any) {
             height: "100%",
             width: "70%",
             padding: 12,
+            marginLeft: -20,
           }}
         >
           <View
@@ -257,23 +288,47 @@ function TabOneScreen(props: any) {
               <Ionicons size={24} name="close" color="#c0392b" />
             </TouchableOpacity>
           </View>
-          <View style={{ paddingVertical: 12 }}>
-            <TouchableOpacity
-              onPress={() => navigation.navigate("Profile")}
-              style={{
-                backgroundColor: "#c0392b",
-                justifyContent: "center",
-                alignItems: "center",
-                width: 30,
-                height: 30,
-                borderRadius: 6,
-              }}
-            >
-              <Text style={{ color: "white", textTransform: "capitalize" }}>
-                {userName?.charAt(0)}
-              </Text>
-            </TouchableOpacity>
-            <Text style={{ textTransform: "capitalize" }}>{userName}</Text>
+          <View
+            style={{
+              paddingVertical: 12,
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
+            {myProfile?.user_avatar || myProfile?.google_avatar ? (
+              <Image
+                source={{
+                  uri: `https://api.mooxevents.com/api/image/mooxapps/${
+                    myProfile?.user_avatar || myProfile?.google_avatar
+                  }`,
+                }}
+                style={{
+                  width: 64,
+                  height: 64,
+                  borderRadius: 100,
+                  marginRight: 8,
+                }}
+              />
+            ) : (
+              <View
+                style={{
+                  backgroundColor: "#c0392b",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  width: 64,
+                  height: 64,
+                  borderRadius: 100,
+                  marginRight: 8,
+                }}
+              >
+                <Text style={{ color: "white", textTransform: "capitalize" }}>
+                  {myProfile?.customer_name?.charAt(0)}
+                </Text>
+              </View>
+            )}
+            <Text style={{ textTransform: "capitalize", marginTop: 8 }}>
+              {userName}
+            </Text>
           </View>
           <View>
             <View
@@ -282,6 +337,7 @@ function TabOneScreen(props: any) {
                 marginHorizontal: -20,
               }}
             />
+
             {menuList.map((val) => (
               <TouchableOpacity
                 onPress={val.onPressFunc}
@@ -289,9 +345,30 @@ function TabOneScreen(props: any) {
                   paddingVertical: 12,
                   borderBottomWidth: 1,
                   marginHorizontal: -20,
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
                 }}
               >
                 <Text style={{ marginHorizontal: 20 }}>{val.name}</Text>
+                {val.name === "Notifications" && (
+                  <View
+                    style={{
+                      backgroundColor: "#42AD88",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      borderRadius: 100,
+                      width: 18,
+                      height: 18,
+                      marginHorizontal: 20,
+                    }}
+                  >
+                    <Text style={{ color: "white", fontSize: 10 }}>
+                      {notifCount}
+                    </Text>
+                  </View>
+                )}
               </TouchableOpacity>
             ))}
           </View>
@@ -404,8 +481,28 @@ function TabOneScreen(props: any) {
           alignItems: "center",
         }}
       >
-        <TouchableOpacity onPress={() => setModalMenu(true)}>
-          <Ionicons size={24} name="menu" color="#ffffff" />
+        <TouchableOpacity
+          onPress={() => setModalMenu(true)}
+          style={{ position: "relative" }}
+        >
+          <Ionicons size={32} name="menu" color="#ffffff" />
+          {notifCount >= 1 && (
+            <View
+              style={{
+                position: "absolute",
+                right: 0,
+                backgroundColor: "#42AD88",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                borderRadius: 100,
+                width: 18,
+                height: 18,
+              }}
+            >
+              <Text style={{ color: "white", fontSize: 10 }}>{notifCount}</Text>
+            </View>
+          )}
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => navigation.navigate("SearchResult")}
@@ -428,6 +525,30 @@ function TabOneScreen(props: any) {
         <View style={{ marginVertical: 30 }}>
           <ActivityIndicator size="large" color="#680101" />
         </View>
+      )}
+      {!loading && !myProfile?.phone && (
+        <Pressable onPress={() => navigation.navigate("ProfileUpdate")}>
+          <View
+            style={{
+              borderColor: "#680101",
+              borderWidth: 1,
+              marginTop: 8,
+              borderRadius: 6,
+              padding: 8,
+            }}
+          >
+            <Text>
+              Please complete your profile{" "}
+              <Text
+                style={{
+                  color: "#680101",
+                }}
+              >
+                here.
+              </Text>
+            </Text>
+          </View>
+        </Pressable>
       )}
       {!loading && (
         <View style={{ marginVertical: 12 }}>

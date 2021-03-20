@@ -1,7 +1,7 @@
 export type RootStackParamList = {
   Root: undefined;
   NotFound: undefined;
-  CreateEvent: undefined;
+  EventForm: undefined;
   DetailEvent: undefined;
   Profile: undefined;
 };

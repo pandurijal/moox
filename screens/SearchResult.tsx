@@ -5,11 +5,14 @@ import {
   TouchableOpacity,
   TextInput,
   ScrollView,
+  ActivityIndicator,
+  Pressable,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { getPackageSearch, getPackageList } from "./../services";
+import { getPackageSearch } from "./../services";
 
 import { Text, View } from "../components/Themed";
+import { SelectStateCity } from "../components/SelectStateCity";
 
 // const vendorTop = [
 //   {
@@ -51,43 +54,38 @@ export default function SearchResult(props: any) {
   const { navigation } = props;
 
   const [loading, setLoading] = useState(false);
-  const [searchResult, setSearchResult] = useState();
+  const [searchText, setSearchText] = useState("");
+  const [searchResult, setSearchResult] = useState([]);
+
+  const [modalFilter, setModalFilter] = useState(false);
+  const [filterLocation, setFilterLocation] = useState(null);
 
   useEffect(() => {
     const _fetchPackageSearch = async () => {
       try {
+        setLoading(true);
         const payload = {
-          id_city: null,
-          package_name: "",
+          id_city: filterLocation?.city?.id ?? "",
+          package_name: searchText || "",
         };
         const res = await getPackageSearch(payload);
+        setSearchResult(res?.data);
         console.log({ payload, res });
       } catch (error) {
         console.log({ error, res: error.response });
         console.error("search detail", error);
+      } finally {
+        setLoading(false);
       }
     };
 
     _fetchPackageSearch();
-  }, []);
+  }, [searchText, filterLocation]);
 
-  // useEffect(() => {
-  //   const _getPackageList = async () => {
-  //     try {
-  //       setLoading(true);
-  //       const res = await getPackageList();
-  //       console.log({ res });
-  //       setSearchResult(res?.data);
-  //       // setTopVendor(res?.data);
-  //     } catch (error) {
-  //       console.log({ error, res: error.response });
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   _getPackageList();
-  // }, []);
+  const handleFilter = (stateCity) => {
+    setFilterLocation(stateCity);
+    console.log({ stateCity });
+  };
 
   const _renderSearchBar = () => {
     return (
@@ -109,7 +107,12 @@ export default function SearchResult(props: any) {
           }}
         >
           <Ionicons size={18} name="search" color="#bdc3c7" />
-          <TextInput placeholder="Search" style={{ padding: 2 }} />
+          <TextInput
+            placeholder="Search"
+            style={{ padding: 2 }}
+            value={searchText}
+            onChangeText={(val) => setSearchText(val)}
+          />
         </View>
       </View>
     );
@@ -216,6 +219,56 @@ export default function SearchResult(props: any) {
     >
       {_renderSearchBar()}
       <View
+        style={{ flexDirection: "row", alignItems: "center", marginTop: 12 }}
+      >
+        <Pressable
+          onPress={() => setModalFilter(true)}
+          style={{
+            marginLeft: 20,
+            backgroundColor: "#707070",
+            borderRadius: 6,
+            paddingVertical: 8,
+            paddingHorizontal: 12,
+          }}
+        >
+          <Text style={{ color: "white" }}>Filter</Text>
+        </Pressable>
+        {!!filterLocation && (
+          <View>
+            <View
+              style={{
+                marginLeft: 8,
+              }}
+            >
+              <Text>
+                State:{" "}
+                <Text style={{ fontWeight: "bold" }}>
+                  {filterLocation?.state?.name}
+                </Text>
+              </Text>
+            </View>
+            <View
+              style={{
+                marginLeft: 8,
+              }}
+            >
+              <Text>
+                City:{" "}
+                <Text style={{ fontWeight: "bold" }}>
+                  {filterLocation?.city?.name}
+                </Text>
+              </Text>
+            </View>
+          </View>
+        )}
+      </View>
+
+      {loading && (
+        <View style={{ marginVertical: 30 }}>
+          <ActivityIndicator size="large" color="#680101" />
+        </View>
+      )}
+      <View
         style={{
           flexDirection: "row",
           flexWrap: "wrap",
@@ -226,6 +279,11 @@ export default function SearchResult(props: any) {
       >
         {searchResult?.map((val) => _renderCard(val))}
       </View>
+      <SelectStateCity
+        modalData={modalFilter}
+        onHide={() => setModalFilter(false)}
+        onApply={handleFilter}
+      />
     </ScrollView>
   );
 }
@@ -233,5 +291,22 @@ export default function SearchResult(props: any) {
 const styles = StyleSheet.create({
   container: {
     padding: 20,
+  },
+  inputWrapper: {
+    marginVertical: 8,
+  },
+  textInput: {
+    // borderWidth: 1,
+    // padding: 6,
+    // borderRadius: 8,
+    // marginTop: 4,
+  },
+  autocompleteContainer: {
+    flex: 1,
+    left: 0,
+    position: "absolute",
+    right: 0,
+    top: 0,
+    zIndex: 1,
   },
 });

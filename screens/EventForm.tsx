@@ -8,30 +8,34 @@ import {
   Pressable,
 } from "react-native";
 import { Formik } from "formik";
-import { postEvent } from "./../services";
+import { postEvent, updateEvent, getMyEventDetail } from "../services";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
 import EditScreenInfo from "../components/EditScreenInfo";
 import { Text, View } from "../components/Themed";
 
-const eventList = [
-  // { id: 1, name: "My Birthday", date: "12 Dec 2020" },
-  // { id: 2, name: "My Birthday", date: "12 Dec 2020" },
-];
+export default function EventForm(props: any) {
+  const { navigation, route } = props;
 
-export default function CreateEvent(props: any) {
-  const { navigation } = props;
-
-  // const [showCompleted, setShowCompleted] = useState(false);
-  // const [selectedDate, setSelectedDate] = useState(new Date());
   const [date, setDate] = useState(new Date());
+  const [eventDetail, setEventDetail] = useState({});
   const [showDatePicker, setShowDatePicker] = useState(false);
 
-  // useEffect(() => {
-  //   setShowDatePicker(false);
-  // }, [selectedDate]);
+  useEffect(() => {
+    const _getMyEvent = async () => {
+      const { eventId } = route.params;
+      console.log({ eventId });
+      try {
+        const res = await getMyEventDetail(eventId);
+        console.log("event detail", res);
+        setEventDetail(res?.data);
+      } catch (error) {
+        console.error("event detail", error);
+      }
+    };
 
-  // const [mode, setMode] = useState("date");
+    _getMyEvent();
+  }, []);
 
   const onChangeDatePicker = (selectedDate) => {
     const currentSelectedDate = selectedDate || date;
@@ -54,11 +58,17 @@ export default function CreateEvent(props: any) {
         address: values.address,
       };
       console.log({ payload });
-      const res = await postEvent(payload);
-      if (res) {
-        navigation.navigate("TabTwoScreen");
+      if (eventDetail?.id) {
+        const res = await updateEvent(eventDetail?.id, payload);
+        if (res) {
+          navigation.navigate("DetailEvent", { eventId: eventDetail?.id });
+        }
+      } else {
+        const res = await postEvent(payload);
+        if (res) {
+          navigation.navigate("TabTwoScreen");
+        }
       }
-      console.log({ res });
     } catch (error) {
       console.log({ error, res: error.response });
       console.error(error);
@@ -67,14 +77,24 @@ export default function CreateEvent(props: any) {
 
   return (
     <View style={styles.container}>
+      <Text
+        style={{
+          color: "#680101",
+          fontWeight: "bold",
+          fontSize: 18,
+        }}
+      >
+        {eventDetail?.id ? "Update" : "Create"} Event
+      </Text>
       <Formik
         // validationSchema={loginSchema}
         initialValues={{
-          name: "",
-          date: "",
-          description: "",
-          address: "",
+          name: eventDetail?.name,
+          date: eventDetail?.date ? moment(eventDetail?.date).format("L") : "",
+          description: eventDetail?.description,
+          address: eventDetail?.address,
         }}
+        enableReinitialize
         onSubmit={_handleSubmit}
       >
         {({
@@ -178,7 +198,7 @@ export default function CreateEvent(props: any) {
                     textAlign: "center",
                   }}
                 >
-                  Create Event
+                  {eventDetail?.id ? "Update" : "Create"} Event
                 </Text>
               </TouchableOpacity>
             </View>

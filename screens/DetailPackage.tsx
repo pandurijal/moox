@@ -313,7 +313,7 @@ export default function DetailPackage(props: any) {
               borderColor: "#c0392b",
               marginBottom: 6,
             }}
-            onPress={() => navigation.navigate("CreateEvent")}
+            onPress={() => navigation.navigate("EventForm")}
           >
             <Text
               style={{
@@ -455,7 +455,7 @@ export default function DetailPackage(props: any) {
                   marginTop: 18,
                 }}
                 onPress={() => {
-                  navigation.navigate("CreateEvent");
+                  navigation.navigate("EventForm");
                   setModalBooking(false);
                 }}
                 disabled={isSubmitting}

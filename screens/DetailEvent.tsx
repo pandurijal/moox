@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import moment from "moment";
 import Modal from "react-native-modal";
+import { Ionicons } from "@expo/vector-icons";
+import { useIsFocused } from "@react-navigation/native";
 import {
   Button,
   Pressable,
@@ -8,7 +10,11 @@ import {
   TouchableOpacity,
   TextInput,
 } from "react-native";
-import { getMyEventDetail, getMyEventVendor } from "./../services";
+import {
+  getMyEventDetail,
+  getMyEventVendor,
+  postVendorReview,
+} from "./../services";
 
 import { Text, View } from "../components/Themed";
 
@@ -34,15 +40,18 @@ const vendorList = [
 ];
 
 export default function DetailEvent(props: any) {
+  const { navigation, route } = props;
+  const isFocused = useIsFocused();
   const [eventDetail, setEventDetail] = useState({});
   const [eventVendor, setEventVendor] = useState([]);
   const [tab, setTab] = useState("waiting");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const [modalReview, setModalReview] = useState(true);
+  const [modalReview, setModalReview] = useState(false);
+  const [bookingIdReview, setBookingIdReview] = useState("");
+  const [packageIdReview, setPackageIdReview] = useState("");
+  const [ratingReview, setRatingReview] = useState(-1);
   const [messageReview, setMessageReview] = useState("");
-
-  const { navigation, route } = props;
 
   useEffect(() => {
     const _getMyEvent = async () => {
@@ -58,7 +67,7 @@ export default function DetailEvent(props: any) {
     };
 
     _getMyEvent();
-  }, []);
+  }, [isFocused]);
 
   useEffect(() => {
     const _getMyEventVendor = async () => {
@@ -79,7 +88,34 @@ export default function DetailEvent(props: any) {
     _getMyEventVendor();
   }, [tab]);
 
-  const handleSubmitReview = () => {};
+  const showModalReview = (bookingId, packageId) => {
+    setModalReview(true);
+    setBookingIdReview(bookingId);
+    setPackageIdReview(packageId);
+  };
+
+  const handleSubmitReview = async () => {
+    try {
+      setIsSubmitting(true);
+      const payload = {
+        id_booking: bookingIdReview,
+        id_package: packageIdReview,
+        rating: ratingReview + 1,
+        message: messageReview,
+      };
+      const res = await postVendorReview(payload);
+      if (res) {
+        setModalReview(false);
+        setTab("review");
+      }
+      console.log({ payload });
+    } catch (error) {
+      console.log({ error, res: error.response });
+      console.error("submit review", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -153,6 +189,9 @@ export default function DetailEvent(props: any) {
                     marginTop: 4,
                     borderRadius: 6,
                   }}
+                  onPress={() =>
+                    showModalReview(val?.id_booking, val?.id_package)
+                  }
                 >
                   <Text style={{ color: "green" }}>Review</Text>
                 </Pressable>
@@ -179,6 +218,50 @@ export default function DetailEvent(props: any) {
           <Text style={{ marginVertical: 8 }}>{eventDetail.description}</Text>
         </View>
       </View>
+      <View style={{ paddingVertical: 8 }}>
+        <TouchableOpacity
+          style={{
+            backgroundColor: "#c0392b",
+            padding: 12,
+            borderRadius: 6,
+            marginBottom: 6,
+          }}
+          onPress={() =>
+            navigation.navigate("EventForm", { eventId: eventDetail?.id })
+          }
+        >
+          <Text
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              textAlign: "center",
+            }}
+          >
+            Edit
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={{
+            backgroundColor: "#fff",
+            padding: 12,
+            borderRadius: 6,
+            borderWidth: 1,
+            borderColor: "#c0392b",
+            marginBottom: 6,
+          }}
+          onPress={() => navigation.navigate("EventForm")}
+        >
+          <Text
+            style={{
+              color: "#c0392b",
+              fontWeight: "bold",
+              textAlign: "center",
+            }}
+          >
+            Cancel Event
+          </Text>
+        </TouchableOpacity>
+      </View>
       <Modal
         isVisible={modalReview}
         // onBackButtonPress={() => setModalBooking(false)}
@@ -196,6 +279,27 @@ export default function DetailEvent(props: any) {
             borderRadius: 4,
           }}
         >
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "center",
+              alignItems: "center",
+              marginVertical: 12,
+            }}
+          >
+            {[...Array(5)].map((val, index) => {
+              const currRating = index <= ratingReview ? true : false;
+              return (
+                <Pressable key={index} onPress={() => setRatingReview(index)}>
+                  <Ionicons
+                    name={currRating ? "star" : "star-outline"}
+                    color="#f1c40f"
+                    style={{ fontSize: 24, marginHorizontal: 4 }}
+                  />
+                </Pressable>
+              );
+            })}
+          </View>
           <View>
             <Text>Message</Text>
             <TextInput
@@ -209,8 +313,9 @@ export default function DetailEvent(props: any) {
               backgroundColor: !isSubmitting ? "#c0392b" : "#bdc3c7",
               padding: 12,
               borderRadius: 6,
+              marginTop: 12,
             }}
-            onPress={handleSubmit}
+            onPress={handleSubmitReview}
             disabled={isSubmitting}
           >
             <Text

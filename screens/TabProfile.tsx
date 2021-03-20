@@ -1,20 +1,42 @@
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
-import { Pressable, StyleSheet, TouchableOpacity } from "react-native";
+import { Pressable, StyleSheet, TouchableOpacity, Image } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { userLogoutAction } from "./../store/actions/userAction";
 import { Ionicons } from "@expo/vector-icons";
-import { getMyPackage } from "./../services";
+import { getMyPackage, getMyProfile } from "./../services";
+import { useIsFocused } from "@react-navigation/native";
 
 import { Text, View } from "../components/Themed";
 
 function TabProfile(props: any) {
   const [tab, setTab] = useState("account");
+  const isFocused = useIsFocused();
+
+  const [myProfile, setMyProfile] = useState({});
   const [packageDetail, setPackageDetail] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const { navigation, userLogoutAction, auth } = props;
 
   const userData = auth?.userData?.data;
+
+  const _getMyProfile = async () => {
+    try {
+      setLoading(true);
+      const res = await getMyProfile();
+      console.log("profile", res);
+      setMyProfile(res?.status);
+    } catch (error) {
+      console.log({ error, res: error.response });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    _getMyProfile();
+  }, [isFocused]);
 
   // useEffect(() => {
   //   const getToken = async () => {
@@ -37,7 +59,9 @@ function TabProfile(props: any) {
         };
         const res = await getMyPackage(payload);
         console.log("my package", res);
-        setPackageDetail(res?.data?.[0]);
+        if (res?.data?.length) {
+          setPackageDetail(res?.data?.[res?.data?.length - 1]);
+        }
       } catch (error) {
         console.error("my package", error);
       }
@@ -49,8 +73,12 @@ function TabProfile(props: any) {
   const menuList = [
     // { name: "Vendor", onPressFunc: () => navigation.navigate("ProfileVendor") },
     {
-      name: "Setting",
-      onPressFunc: () => navigation.navigate("ProfileSetting"),
+      name: "Update Profile",
+      onPressFunc: () => navigation.navigate("ProfileUpdate"),
+    },
+    {
+      name: "Change Password",
+      onPressFunc: () => navigation.navigate("ChangePassword"),
     },
     { name: "Logout", onPressFunc: () => handleLogout() },
   ];
@@ -113,27 +141,43 @@ function TabProfile(props: any) {
         <View style={styles.container}>
           <View
             style={{
-              marginVertical: 24,
+              marginBottom: 24,
               justifyContent: "center",
               alignItems: "center",
             }}
           >
-            <TouchableOpacity
-              style={{
-                backgroundColor: "#c0392b",
-                justifyContent: "center",
-                alignItems: "center",
-                width: 64,
-                height: 64,
-                borderRadius: 6,
-                marginBottom: 12,
-              }}
-            >
-              <Text style={{ color: "white", textTransform: "capitalize" }}>
-                {userData?.name?.charAt(0)}
-              </Text>
-            </TouchableOpacity>
-            <Text>{userData?.email}</Text>
+            {myProfile?.user_avatar || myProfile?.google_avatar ? (
+              <Image
+                source={{
+                  uri: `https://api.mooxevents.com/api/image/mooxapps/${
+                    myProfile?.user_avatar || myProfile?.google_avatar
+                  }`,
+                }}
+                style={{
+                  width: 64,
+                  height: 64,
+                  borderRadius: 100,
+                  marginRight: 8,
+                }}
+              />
+            ) : (
+              <View
+                style={{
+                  backgroundColor: "#c0392b",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  width: 64,
+                  height: 64,
+                  borderRadius: 100,
+                  marginRight: 8,
+                }}
+              >
+                <Text style={{ color: "white", textTransform: "capitalize" }}>
+                  {myProfile?.customer_name?.charAt(0)}
+                </Text>
+              </View>
+            )}
+            <Text style={{ marginTop: 8 }}>{userData?.email}</Text>
           </View>
           <View
             style={{
@@ -158,7 +202,7 @@ function TabProfile(props: any) {
 
       {tab === "vendor" && (
         <>
-          {!packageDetail ? (
+          {!!packageDetail ? (
             <View style={[styles.container, {}]}>
               <View
                 style={{
@@ -167,10 +211,40 @@ function TabProfile(props: any) {
                   alignItems: "center",
                 }}
               >
-                <Text style={{ fontWeight: "bold" }}>Package Detail</Text>
-                <Text>Edit</Text>
+                <Text style={{ fontWeight: "bold" }}>Package Details</Text>
+                <Text
+                  onPress={() =>
+                    navigation.navigate("PackageForm", {
+                      packageId: packageDetail?.id,
+                    })
+                  }
+                >
+                  Edit
+                </Text>
               </View>
-              <Text>{packageDetail?.name_item}</Text>
+              <View
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  width: "100%",
+                  marginVertical: 12,
+                }}
+              >
+                <Image
+                  source={{
+                    uri: `https://api.mooxevents.com/api/image/mooxapps/${packageDetail?.img_package}`,
+                  }}
+                  style={{
+                    width: 240,
+                    height: 60,
+                    borderRadius: 4,
+                    marginRight: 8,
+                  }}
+                />
+              </View>
+              <Text style={{ textTransform: "capitalize", fontSize: 16 }}>
+                {packageDetail?.name_item}
+              </Text>
 
               <View
                 style={{
@@ -185,13 +259,17 @@ function TabProfile(props: any) {
 
               <View style={{ paddingVertical: 8 }}>
                 <View>
-                  <Text>Description</Text>
+                  <Text style={{ color: "#680101", fontWeight: "bold" }}>
+                    Description
+                  </Text>
                   <Text style={{ marginVertical: 8 }}>
                     {packageDetail?.desc}
                   </Text>
                 </View>
                 <View>
-                  <Text>Event Address</Text>
+                  <Text style={{ color: "#680101", fontWeight: "bold" }}>
+                    Address
+                  </Text>
                   <Text>{packageDetail?.address}</Text>
                   <Text>
                     {packageDetail?.city_name} - {packageDetail?.state_name}

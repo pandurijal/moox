@@ -1,42 +1,42 @@
 import React, { useState } from "react";
 import { Button, StyleSheet, TouchableOpacity, TextInput } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { userResetPassword } from "./../services";
+import { userChangePassword } from "./../services";
 import { Formik } from "formik";
 import * as Yup from "yup";
 
 const validationSchema = Yup.object().shape({
-  email: Yup.string()
-    .email("Enter a valid email")
-    .required("Email is required"),
+  password: Yup.string().required("Email is required"),
+  password_repat: Yup.string().required("Email is required"),
 });
 
-import EditScreenInfo from "../components/EditScreenInfo";
 import { Text, View } from "../components/Themed";
 
-export default function LandingPage(props: any) {
+export default function ChangePassword(props: any) {
   const [resMessage, setResMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
   const { navigation } = props;
 
-  const handleSubmitResetPassword = (values: any) => {
-    _submitResetPassword(values);
+  const handleSubmitChangePassword = (values: any) => {
+    _submitChangePassword(values);
   };
 
-  const _submitResetPassword = async (values: any) => {
+  const _submitChangePassword = async (values: any) => {
+    console.log({ values });
     try {
       setResMessage("");
       setLoading(true);
       const payload = {
-        email: values?.email,
+        password: values?.password,
+        password_repeat: values?.password_repeat,
       };
-      const res = await userResetPassword(payload);
+      const res = await userChangePassword(payload);
       if (res) {
-        navigation.navigate("Login");
+        navigation.goBack();
       }
     } catch (error) {
-      const errMessage = "Reset password failed. Unknown error occured.";
+      const errMessage = "Change password failed. Unknown error occured.";
       setResMessage(errMessage);
       console.error(error);
     } finally {
@@ -47,17 +47,18 @@ export default function LandingPage(props: any) {
   return (
     <View style={styles.container}>
       <Text style={{ fontSize: 18, fontWeight: "bold", color: "#680101" }}>
-        Forgot Password
+        Change Password
       </Text>
       <Text style={{ marginVertical: 12 }}>
-        Type your email below and check for email confirmation
+        Type your new password below to change password
       </Text>
       <Formik
-        validationSchema={validationSchema}
+        // validationSchema={validationSchema}
         initialValues={{
-          email: "",
+          password: "",
+          password_repeat: "",
         }}
-        onSubmit={handleSubmitResetPassword}
+        onSubmit={handleSubmitChangePassword}
       >
         {({
           handleChange,
@@ -69,17 +70,32 @@ export default function LandingPage(props: any) {
         }) => (
           <View>
             <View style={styles.inputWrapper}>
-              <Text>Email</Text>
+              <Text>Password</Text>
               <TextInput
                 autoCapitalize="none"
-                onChangeText={handleChange("email")}
-                onBlur={handleBlur("email")}
-                value={values.email}
+                onChangeText={handleChange("password")}
+                onBlur={handleBlur("password")}
+                value={values.password}
                 style={styles.textInput}
               />
-              {touched.email && errors.email && (
+              {touched.password && errors.password && (
                 <Text style={{ color: "red", fontSize: 12 }}>
-                  {errors.email}
+                  {errors.password}
+                </Text>
+              )}
+            </View>
+            <View style={styles.inputWrapper}>
+              <Text>Password Repeat</Text>
+              <TextInput
+                autoCapitalize="none"
+                onChangeText={handleChange("password_repeat")}
+                onBlur={handleBlur("password_repeat")}
+                value={values.password_repeat}
+                style={styles.textInput}
+              />
+              {touched.password_repeat && errors.password_repeat && (
+                <Text style={{ color: "red", fontSize: 12 }}>
+                  {errors.password_repeat}
                 </Text>
               )}
             </View>
@@ -101,7 +117,7 @@ export default function LandingPage(props: any) {
                     textAlign: "center",
                   }}
                 >
-                  Send
+                  Submit
                 </Text>
               </TouchableOpacity>
             </View>

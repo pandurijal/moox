@@ -29,6 +29,13 @@ export default function TodoForm(props) {
         const res = await getTodoDetail(todoId);
         console.log({ res });
         setName(res?.data?.[0]?.name);
+        setTodo(
+          res?.todo_list?.map((val) => ({
+            id: val?.id_todo_list,
+            content: val?.name,
+          }))
+        );
+        setTodoDetail(res?.data?.[0]);
         setTodoList(res?.todo_list);
       } catch (error) {
         console.log({ error, res: error.response });

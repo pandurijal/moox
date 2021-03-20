@@ -69,8 +69,36 @@ export const userResetPassword = (payload: any) => {
   return baseURL.post("/auth/resetPassword", payload).then((res) => res.data);
 };
 
+export const userChangePassword = (payload: any) => {
+  return baseURL
+    .put("/profile/passwordchange", payload)
+    .then((res) => res.data);
+};
+
+export const getMyProfile = () => {
+  return baseURL.get("/session_token").then((res) => res.data);
+};
+
+export const updateProfilePhoto = (payload: any) => {
+  return baseURL
+    .put("/profile/image/upload", payload, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    })
+    .then((res) => res.data);
+};
+
+export const updateProfile = (payload: any) => {
+  return baseURL.post("/profile/updateType", payload).then((res) => res.data);
+};
+
 export const postEvent = (payload: any) => {
   return baseURL.post("/events", payload).then((res) => res.data);
+};
+
+export const updateEvent = (eventId: any, payload: any) => {
+  return baseURL.put(`/events/${eventId}`, payload).then((res) => res.data);
 };
 
 export const getVendorTypeList = () => {
@@ -108,6 +136,12 @@ export const postPackage = (payload: any) => {
         "Content-Type": "multipart/form-data",
       },
     })
+    .then((res) => res.data);
+};
+
+export const updatePackage = (packageId: any, payload: any) => {
+  return baseURL
+    .put(`/package_vendor/${packageId}`, payload)
     .then((res) => res.data);
 };
 
@@ -163,4 +197,16 @@ export const getBookingDetail = (bookingId: any) => {
 
 export const updateBookingDetail = (bookingId: any, payload: any) => {
   return baseURL.put(`/booking/${bookingId}`, payload).then((res) => res.data);
+};
+
+export const postVendorReview = (payload: any) => {
+  return baseURL.post(`/rating`, payload).then((res) => res.data);
+};
+
+export const getNotifCount = () => {
+  return baseURL.get(`/notification/count`).then((res) => res.data);
+};
+
+export const getNotifList = () => {
+  return baseURL.get(`/notification`).then((res) => res.data);
 };

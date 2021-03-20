@@ -19,7 +19,7 @@ import RegisterCustomer from "./../screens/RegisterCustomer";
 import RegisterVendor from "./../screens/RegisterVendor";
 import ForgotPassword from "./../screens/ForgotPassword";
 import ResetPassword from "./../screens/ResetPassword";
-import CreateEvent from "./../screens/CreateEvent";
+import EventForm from "../screens/EventForm";
 import DetailEvent from "./../screens/DetailEvent";
 import Profile from "./../screens/Profile";
 import ProfileSetting from "./../screens/ProfileSetting";
@@ -32,7 +32,8 @@ import CategoryList from "./../screens/CategoryList";
 import TodoForm from "./../screens/TodoForm";
 import TodoDetail from "./../screens/TodoDetail";
 import Notifications from "./../screens/Notifications";
-import LandingPage from "./../screens/LandingPage";
+import ProfileUpdate from "./../screens/ProfileUpdate";
+import ChangePassword from "./../screens/ChangePassword";
 import BookingDetail from "./../screens/BookingDetail";
 
 const MyTheme = {
@@ -102,14 +103,19 @@ const RootNavigator = connect((state: any) => ({
             options={{ headerTitle: "Setting" }}
           />
           <Stack.Screen
+            name="ProfileUpdate"
+            component={ProfileUpdate}
+            options={{ headerTitle: "Update Profile" }}
+          />
+          <Stack.Screen
             name="ProfileVendor"
             component={ProfileVendor}
             options={{ headerTitle: "Vendor" }}
           />
           <Stack.Screen
-            name="CreateEvent"
-            component={CreateEvent}
-            options={{ headerTitle: "Create Event" }}
+            name="EventForm"
+            component={EventForm}
+            options={{ headerTitle: "Event Form" }}
           />
           <Stack.Screen
             name="DetailEvent"
@@ -124,7 +130,7 @@ const RootNavigator = connect((state: any) => ({
           <Stack.Screen
             name="PackageForm"
             component={PackageForm}
-            options={{ headerTitle: "Create Package" }}
+            options={{ headerTitle: "Package Form" }}
           />
           <Stack.Screen
             name="BookingDetail"
@@ -150,6 +156,11 @@ const RootNavigator = connect((state: any) => ({
             name="TodoDetail"
             component={TodoDetail}
             options={{ headerTitle: "Todo Detail" }}
+          />
+          <Stack.Screen
+            name="ChangePassword"
+            component={ChangePassword}
+            options={{ headerTitle: "Change Password" }}
           />
           <Stack.Screen
             name="Notifications"

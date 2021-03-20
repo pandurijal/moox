@@ -132,7 +132,7 @@ export default function TabTwoScreen(props: any) {
                   borderRadius: 6,
                   marginTop: 18,
                 }}
-                onPress={() => navigation.navigate("CreateEvent")}
+                onPress={() => navigation.navigate("EventForm")}
               >
                 <Text
                   style={{

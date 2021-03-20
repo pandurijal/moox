@@ -46,7 +46,7 @@ export default function ProfileSetting(props: any) {
               padding: 12,
               borderRadius: 6,
             }}
-            onPress={() => navigation.navigate("CreateEvent")}
+            onPress={() => navigation.navigate("EventForm")}
           >
             <Text
               style={{
