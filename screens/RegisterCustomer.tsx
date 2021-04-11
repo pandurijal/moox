@@ -19,6 +19,7 @@ import * as Yup from "yup";
 import { userGoogleAuthAction } from "./../store/actions/userAction";
 import { userRegister } from "./../services";
 import * as Google from "expo-google-app-auth";
+import * as GoogleSignIn from "expo-google-sign-in";
 
 const registerSchema = Yup.object().shape({
   name: Yup.string().required("Name is required"),
@@ -42,7 +43,16 @@ function RegisterCustomer(props: any) {
 
   useEffect(() => {
     registerForPushNotificationsAsync();
+    initAsync();
   }, []);
+
+  const initAsync = async () => {
+    await GoogleSignIn.initAsync({
+      clientId:
+        "917298788494-8nmki8up268ibo5pp8886pe3et4hrep0.apps.googleusercontent.com",
+      scopes: ["profile", "email"],
+    });
+  };
 
   async function registerForPushNotificationsAsync() {
     let token;
@@ -99,49 +109,87 @@ function RegisterCustomer(props: any) {
         navigation.navigate("Login");
       }
     } catch (error) {
-      const errMessage = "Registration failed. Unknown error occured.";
+      const errMessage =
+        error?.response?.data?.errors ||
+        "Registration failed. Unknown error occured.";
       setResMessage(errMessage);
       console.error(error);
+      console.log({ error, res: error.response });
     } finally {
       setLoading(false);
     }
   };
 
   const _submitRegisterGoogle = async () => {
-    const resGoogle = await Google.logInAsync({
-      clientId:
-        "952616632052-9om791edneurtr8eg006ld4etg83pv7n.apps.googleusercontent.com",
-      androidStandaloneAppClientId:
-        "952616632052-9om791edneurtr8eg006ld4etg83pv7n.apps.googleusercontent.com",
-      scopes: ["profile", "email"],
-    });
-
-    if (resGoogle?.type === "success") {
-      try {
-        console.log({ resGoogle });
-        setResMessage("");
-        setLoading(true);
-        const payload = {
-          token: resGoogle?.idToken,
-          roles: "customer",
-          notify: expoToken,
-        };
-        console.log({ resGoogle, payload });
-        await userGoogleAuthAction(payload);
-        const { userData } = props;
-        console.log({ userData });
-        if (!userData?.loggedIn) {
-          setResMessage(userData?.errMessage);
+    try {
+      await GoogleSignIn.askForPlayServicesAsync();
+      const resGoogle = await GoogleSignIn.signInAsync();
+      if (resGoogle?.type === "success") {
+        try {
+          console.log({ resGoogle });
+          setResMessage("");
+          setLoading(true);
+          const payload = {
+            token: resGoogle?.user?.auth?.idToken,
+            roles: "customer",
+            notify: expoToken,
+          };
+          console.log({ payload });
+          console.log({ resGoogle, payload });
+          await userGoogleAuthAction(payload);
+          const { userData } = props;
+          console.log({ userData });
+          if (!userData?.loggedIn) {
+            setResMessage(userData?.errMessage);
+          }
+        } catch (error) {
+          const errMessage = "Registration failed. Unknown error occured.";
+          setResMessage(errMessage);
+          console.error(error);
+        } finally {
+          setLoading(false);
         }
-      } catch (error) {
-        const errMessage = "Registration failed. Unknown error occured.";
-        setResMessage(errMessage);
-        console.error(error);
-      } finally {
-        setLoading(false);
       }
+    } catch ({ message }) {
+      alert("login: Error:" + message);
     }
   };
+
+  // const _submitRegisterGoogle = async () => {
+  //   const resGoogle = await Google.logInAsync({
+  //     clientId:
+  //       "952616632052-9om791edneurtr8eg006ld4etg83pv7n.apps.googleusercontent.com",
+  //     androidStandaloneAppClientId:
+  //       "952616632052-9om791edneurtr8eg006ld4etg83pv7n.apps.googleusercontent.com",
+  //     scopes: ["profile", "email"],
+  //   });
+
+  //   if (resGoogle?.type === "success") {
+  //     try {
+  //       console.log({ resGoogle });
+  //       setResMessage("");
+  //       setLoading(true);
+  //       const payload = {
+  //         token: resGoogle?.idToken,
+  //         roles: "customer",
+  //         notify: expoToken,
+  //       };
+  //       console.log({ resGoogle, payload });
+  //       await userGoogleAuthAction(payload);
+  //       const { userData } = props;
+  //       console.log({ userData });
+  //       if (!userData?.loggedIn) {
+  //         setResMessage(userData?.errMessage);
+  //       }
+  //     } catch (error) {
+  //       const errMessage = "Registration failed. Unknown error occured.";
+  //       setResMessage(errMessage);
+  //       console.error(error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   }
+  // };
 
   return (
     <View
@@ -150,7 +198,7 @@ function RegisterCustomer(props: any) {
       }}
     >
       <ScrollView contentContainerStyle={[styles.container, { flexGrow: 1 }]}>
-        <Text style={{ fontSize: 18, fontWeight: "bold", color: "#680101" }}>
+        <Text style={{ fontSize: 18, fontWeight: "bold", color: "#800020" }}>
           Sign Up as a Customer
         </Text>
         {/* <Text>{expoToken}</Text> */}
@@ -159,7 +207,7 @@ function RegisterCustomer(props: any) {
           <TouchableOpacity
             onPress={() => navigation.navigate("RegisterVendor")}
           >
-            <Text style={{ color: "#680101" }}>here</Text>
+            <Text style={{ color: "#800020" }}>here</Text>
           </TouchableOpacity>
         </View>
         <Formik
@@ -246,7 +294,7 @@ function RegisterCustomer(props: any) {
               <View style={styles.inputWrapper}>
                 <TouchableOpacity
                   style={{
-                    backgroundColor: !loading ? "#c0392b" : "#bdc3c7",
+                    backgroundColor: !loading ? "#800020" : "#bdc3c7",
                     padding: 12,
                     borderRadius: 6,
                     marginTop: 12,
@@ -315,7 +363,7 @@ function RegisterCustomer(props: any) {
         >
           <Text>Already have an account? </Text>
           <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-            <Text style={{ fontWeight: "bold", color: "#680101" }}>
+            <Text style={{ fontWeight: "bold", color: "#800020" }}>
               Login here
             </Text>
           </TouchableOpacity>

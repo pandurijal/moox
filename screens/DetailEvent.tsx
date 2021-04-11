@@ -130,7 +130,7 @@ export default function DetailEvent(props: any) {
           {["waiting", "approve", "done", "review"].map((val, index) => (
             <TouchableOpacity
               style={{
-                borderColor: tab === val ? "#680101" : "gray",
+                borderColor: tab === val ? "#800020" : "gray",
                 borderWidth: 1,
                 paddingVertical: 4,
                 paddingHorizontal: 12,
@@ -143,7 +143,7 @@ export default function DetailEvent(props: any) {
               <Text
                 style={{
                   textTransform: "capitalize",
-                  color: tab === val ? "#680101" : "gray",
+                  color: tab === val ? "#800020" : "gray",
                   fontWeight: "600",
                 }}
               >
@@ -221,7 +221,7 @@ export default function DetailEvent(props: any) {
       <View style={{ paddingVertical: 8 }}>
         <TouchableOpacity
           style={{
-            backgroundColor: "#c0392b",
+            backgroundColor: "#800020",
             padding: 12,
             borderRadius: 6,
             marginBottom: 6,
@@ -246,14 +246,14 @@ export default function DetailEvent(props: any) {
             padding: 12,
             borderRadius: 6,
             borderWidth: 1,
-            borderColor: "#c0392b",
+            borderColor: "#800020",
             marginBottom: 6,
           }}
           onPress={() => navigation.navigate("EventForm")}
         >
           <Text
             style={{
-              color: "#c0392b",
+              color: "#800020",
               fontWeight: "bold",
               textAlign: "center",
             }}
@@ -310,7 +310,7 @@ export default function DetailEvent(props: any) {
           </View>
           <Pressable
             style={{
-              backgroundColor: !isSubmitting ? "#c0392b" : "#bdc3c7",
+              backgroundColor: !isSubmitting ? "#800020" : "#bdc3c7",
               padding: 12,
               borderRadius: 6,
               marginTop: 12,

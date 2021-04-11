@@ -1,36 +1,28 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, Text, View, ScrollView, Image } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  ScrollView,
+  Image,
+  ActivityIndicator,
+} from "react-native";
 import moment from "moment";
 import { getNotifList } from "./../services";
 
 export default function Notifications() {
-  const [notifList, setNotifList] = useState(0);
+  const [notifList, setNotifList] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const _getNotifList = async () => {
     try {
+      setLoading(true);
       const res = await getNotifList();
-      // const res = {
-      //   response: "OK",
-      //   count: 2,
-      //   data: [
-      //     {
-      //       id: 4,
-      //       status: "unread",
-      //       message: "Pandu Package Mantap MantapYour Event approve by vendors",
-      //       time: "2021-03-16T13:28:00.000Z",
-      //     },
-      //     {
-      //       id: 3,
-      //       status: "read",
-      //       message: "Pandu Package Mantap MantapYour Event approve by vendors",
-      //       time: "2021-03-16T13:27:22.000Z",
-      //     },
-      //   ],
-      //   errors: null,
-      // };
       setNotifList(res?.data);
     } catch (error) {
       console.log({ error, res: error.response });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -38,60 +30,71 @@ export default function Notifications() {
     _getNotifList();
   }, []);
 
+  console.log({ notifList });
+
   return (
     <>
-      <ScrollView>
-        {!!notifList ? (
-          <View style={{ paddingVertical: 18 }}>
-            {notifList?.map((val) => (
-              <View
-                style={{
-                  borderRadius: 6,
-                  elevation: 2,
-                  marginHorizontal: 20,
-                  marginVertical: 8,
-                  paddingVertical: 8,
-                  paddingHorizontal: 12,
-                  flexDirection: "row",
-                  alignItems: "center",
-                }}
-              >
-                {val.status === "unread" ? (
-                  <Image
-                    source={require(`./../assets/images/icon-notif-unread.png`)}
+      {loading && (
+        <View style={{ marginVertical: 30 }}>
+          <ActivityIndicator size="large" color="#800020" />
+        </View>
+      )}
+      {!loading && (
+        <>
+          {!!notifList ? (
+            <ScrollView>
+              <View style={{ paddingVertical: 18 }}>
+                {notifList?.map((val) => (
+                  <View
                     style={{
-                      width: 24,
-                      height: 24,
-                      marginRight: 8,
+                      borderRadius: 6,
+                      elevation: 2,
+                      marginHorizontal: 20,
+                      marginVertical: 8,
+                      paddingVertical: 8,
+                      paddingHorizontal: 12,
+                      flexDirection: "row",
+                      alignItems: "center",
                     }}
-                  />
-                ) : (
-                  <Image
-                    source={require(`./../assets/images/icon-notif-read.png`)}
-                    style={{
-                      width: 24,
-                      height: 24,
-                      marginRight: 8,
-                    }}
-                  />
-                )}
-                <View style={{}}>
-                  <Text>{val.message}</Text>
-                  <Text style={{ color: "gray", fontSize: 12 }}>
-                    {moment(val.time).format("LL")}
-                  </Text>
-                </View>
+                  >
+                    {val.status === "unread" ? (
+                      <Image
+                        source={require(`./../assets/images/icon-notif-unread.png`)}
+                        style={{
+                          width: 24,
+                          height: 24,
+                          marginRight: 8,
+                        }}
+                      />
+                    ) : (
+                      <Image
+                        source={require(`./../assets/images/icon-notif-read.png`)}
+                        style={{
+                          width: 24,
+                          height: 24,
+                          marginRight: 8,
+                        }}
+                      />
+                    )}
+                    <View style={{ width: "90%" }}>
+                      <Text>{val.message}</Text>
+                      <Text style={{ color: "gray", fontSize: 12 }}>
+                        {moment(val.time).format("LL")}
+                      </Text>
+                    </View>
+                  </View>
+                ))}
               </View>
-            ))}
-          </View>
-        ) : (
-          <View style={styles.container}>
-            <Text style={{ fontSize: 18, fontWeight: "bold" }}>
-              You dont have any notifications yet
-            </Text>
-          </View>
-        )}
-      </ScrollView>
+            </ScrollView>
+          ) : (
+            <View style={styles.container}>
+              <Text style={{ fontSize: 18, fontWeight: "bold" }}>
+                You dont have any notifications yet
+              </Text>
+            </View>
+          )}
+        </>
+      )}
     </>
   );
 }

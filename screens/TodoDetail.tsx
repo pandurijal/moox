@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, ActivityIndicator, Pressable } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { getTodoDetail, updateTodo } from "./../services";
+import { getTodoDetail, updateTodo, deleteTodoDetail } from "./../services";
 
 import EditScreenInfo from "../components/EditScreenInfo";
 import { Text, View } from "../components/Themed";
 
 export default function TodoDetail(props) {
   const { navigation, route } = props;
+  const { todoId } = route.params;
 
   const [loading, setLoading] = useState(false);
   const [isTicking, setIsTicking] = useState(false);
@@ -15,7 +16,6 @@ export default function TodoDetail(props) {
   const [todoList, setTodoList] = useState([]);
 
   const _getMyTodoDetail = async () => {
-    const { todoId } = route.params;
     try {
       setLoading(true);
       const res = await getTodoDetail(todoId);
@@ -48,6 +48,20 @@ export default function TodoDetail(props) {
     }
   };
 
+  const handleDelete = async () => {
+    try {
+      setLoading(true);
+      const res = await deleteTodoDetail(todoId);
+      if (res) {
+        navigation.goBack();
+      }
+    } catch (error) {
+      console.log({ error, res: error.response });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   console.log({ todoDetail, todoList });
 
   return (
@@ -60,23 +74,29 @@ export default function TodoDetail(props) {
           alignItems: "center",
         }}
       >
-        <Text>{todoDetail?.name}</Text>
-        <Pressable
+        <Text style={{ fontSize: 18, fontWeight: "bold" }}>
+          {todoDetail?.name}
+        </Text>
+        <Pressable onPress={() => handleDelete()}>
+          <Text>Delete</Text>
+        </Pressable>
+        {/* <Pressable
           onPress={() =>
             navigation.navigate("TodoForm", { todoId: todoDetail?.id })
           }
         >
           <Text>Edit</Text>
-        </Pressable>
+        </Pressable> */}
       </View>
       {!todoList?.length && loading && (
         <View style={{ marginVertical: 30 }}>
-          <ActivityIndicator size="large" color="#680101" />
+          <ActivityIndicator size="large" color="#800020" />
         </View>
       )}
       <View>
-        {todoList?.map((val) => (
+        {todoList?.map((val, index) => (
           <View
+            key={index}
             style={{
               flexDirection: "row",
               justifyContent: "space-between",
@@ -84,7 +104,7 @@ export default function TodoDetail(props) {
             }}
           >
             <Text>{val?.name}</Text>
-            {isTicking && <ActivityIndicator size="small" color="#680101" />}
+            {isTicking && <ActivityIndicator size="small" color="#800020" />}
             {!isTicking && (
               <>
                 {val?.status ? (

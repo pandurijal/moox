@@ -58,7 +58,7 @@ function Profile(props: any) {
       >
         <TouchableOpacity
           style={{
-            backgroundColor: "#c0392b",
+            backgroundColor: "#800020",
             justifyContent: "center",
             alignItems: "center",
             width: 64,

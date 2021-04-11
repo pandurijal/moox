@@ -8,11 +8,14 @@ import {
   View,
   Image,
   ScrollView,
+  Pressable,
+  ActivityIndicator,
 } from "react-native";
 import { Formik } from "formik";
 import mime from "mime";
 import * as ImagePicker from "expo-image-picker";
 import { SelectStateCity } from "../components/SelectStateCity";
+import { Ionicons } from "@expo/vector-icons";
 import Autocomplete from "react-native-autocomplete-input";
 import {
   getPackageDetail,
@@ -20,6 +23,8 @@ import {
   getCityList,
   postPackage,
   updatePackage,
+  updatePackageAddImage,
+  updatePackageDeleteImage,
 } from "./../services";
 
 const dummyOptState = [
@@ -42,28 +47,40 @@ export default function EventForm(props: any) {
   const [optState, setOptState] = useState([]);
   const [optCity, setOptCity] = useState([]);
 
+  const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
   const [modalLocation, setModalLocation] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState({});
 
   const [packageDetail, setPackageDetail] = useState({});
+  const [packageDetailImages, setPackageDetailImages] = useState([]);
+
+  const [resMessage, setResMessage] = useState("");
+
+  const packageId = route?.params?.packageId;
+
+  const _getPackageDetail = async () => {
+    try {
+      setLoading(true);
+      const res = await getPackageDetail(packageId);
+      setPackageDetail(res?.data);
+      setPackageDetailImages(res?.image);
+      setSelectedLocation({
+        state: { name: res?.data?.state_name },
+        city: { name: res?.data?.city_name },
+      });
+    } catch (error) {
+      console.error(error, "package detail");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const { packageId } = route.params;
-    const _getPackageDetail = async () => {
-      try {
-        const res = await getPackageDetail(packageId);
-        console.log({ res });
-        setPackageDetail(res?.data);
-        setSelectedLocation({
-          state: { name: res?.data?.state_name },
-          city: { name: res?.data?.city_name },
-        });
-      } catch (error) {
-        console.error(error, "package detail");
-      }
-    };
-
-    _getPackageDetail();
+    if (packageId) {
+      _getPackageDetail();
+    }
   }, []);
 
   useEffect(() => {
@@ -121,6 +138,63 @@ export default function EventForm(props: any) {
     }
   };
 
+  const _pickImageDirect = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    try {
+      const formdata = new FormData();
+
+      const imgUri = result?.uri?.replace("file:/", "file:///");
+
+      formdata.append("id_package", packageId);
+      formdata.append("image", {
+        uri: imgUri,
+        type: mime.getType(imgUri),
+        name: "image.jpg",
+      });
+      const res = await updatePackageAddImage(formdata);
+      if (res) {
+        _getPackageDetail();
+      }
+      console.log({ res });
+    } catch (error) {
+      let msg = "";
+      if (error?.response?.status === 413) {
+        msg = "Image file is too big. Please use another image.";
+      } else {
+        msg = "Unknown error occured. Please try again";
+      }
+      setResMessage(msg);
+      console.error(error);
+    }
+  };
+
+  const deleteImage = (img) => {
+    const newImages = images?.filter((val) => val !== img);
+
+    setImages(newImages);
+  };
+
+  const _deleteImageDirect = async (imageId) => {
+    try {
+      setSubmitting(true);
+      const res = await updatePackageDeleteImage(imageId);
+      if (res) {
+        _getPackageDetail();
+      }
+    } catch (error) {
+      console.log({ error, res: error.response });
+      console.error(error);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const handleLocation = (stateCity) => {
     setSelectedLocation(stateCity);
     console.log({ stateCity });
@@ -136,6 +210,8 @@ export default function EventForm(props: any) {
 
   const _handleSubmitCreate = async (values: any) => {
     try {
+      setSubmitting(true);
+      setResMessage("");
       console.log("post create event");
       const formdata = new FormData();
 
@@ -143,27 +219,37 @@ export default function EventForm(props: any) {
       formdata.append("desc", values.description);
       formdata.append("price", values.price);
       formdata.append("address", values.address);
-      formdata.append("id_city", selectedCity);
-      // formdata.append("image", images?.[0]);
-      formdata.append("image", {
-        uri: images?.[1],
-        type: mime.getType(images?.[1]),
-        name: "image.jpg",
+      formdata.append("id_city", selectedLocation?.city?.id);
+      images?.map((val, index) => {
+        formdata.append("image", {
+          uri: images?.[index],
+          type: mime.getType(images?.[index]),
+          name: "image.jpg",
+        });
       });
       console.log({ formdata });
       const res = await postPackage(formdata);
-      // if (res) {
-      //   navigation.navigate("TabTwoScreen");
-      // }
+      if (res) {
+        navigation.goBack();
+      }
       console.log({ res });
     } catch (error) {
-      console.log({ error, res: error.response });
+      let msg = "";
+      if (error?.response?.status === 413) {
+        msg = "Image file is too big. Please use another image.";
+      } else {
+        msg = "Unknown error occured. Please try again";
+      }
+      setResMessage(msg);
       console.error(error);
+    } finally {
+      setSubmitting(false);
     }
   };
 
   const _handleSubmitUpdate = async (values: any) => {
     try {
+      setSubmitting(true);
       const payload = {
         name_item: values?.name ?? "",
         desc: values?.description ?? "",
@@ -179,6 +265,8 @@ export default function EventForm(props: any) {
     } catch (error) {
       console.log({ error, res: error.response });
       console.error(error);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -186,35 +274,131 @@ export default function EventForm(props: any) {
     <>
       <ScrollView>
         <View style={styles.container}>
-          <View style={{ display: "flex", flexDirection: "row" }}>
-            {images.map((val, index) => (
-              <Image
-                key={index}
-                source={{
-                  uri: val,
-                }}
-                style={{
-                  width: 80,
-                  marginRight: 8,
-                  borderRadius: 4,
-                }}
-              />
-            ))}
-            <TouchableOpacity
-              onPress={pickImage}
-              style={{
-                borderWidth: 2,
-                borderColor: "gray",
-                borderRadius: 8,
-                width: 40,
-                height: 40,
-                justifyContent: "center",
-                alignItems: "center",
+          {loading && (
+            <View style={{ marginVertical: 30 }}>
+              <ActivityIndicator size="large" color="#800020" />
+            </View>
+          )}
+          {packageId && (
+            <ScrollView
+              contentContainerStyle={{
+                display: "flex",
+                flexDirection: "row",
               }}
+              horizontal
             >
-              <Text style={{ fontWeight: "bold", color: "gray" }}>+</Text>
-            </TouchableOpacity>
-          </View>
+              {packageDetailImages.map((val, index) => (
+                <View style={{ position: "relative" }}>
+                  <Image
+                    key={index}
+                    source={{
+                      uri: `https://api.mooxevents.com/api/image/mooxapps/${val.img_package}`,
+                    }}
+                    style={{
+                      width: 120,
+                      height: 120,
+                      borderRadius: 4,
+                      marginLeft: 4,
+                    }}
+                  />
+                  <Pressable
+                    style={{
+                      backgroundColor: "white",
+                      position: "absolute",
+                      top: 0,
+                      right: 0,
+                      borderRadius: 4,
+                      padding: 2,
+                    }}
+                    onPress={() => _deleteImageDirect(val.id)}
+                  >
+                    <Ionicons
+                      size={22}
+                      name="close-circle-outline"
+                      color="#800020"
+                    />
+                  </Pressable>
+                </View>
+              ))}
+              {packageDetailImages?.length < 3 && (
+                <TouchableOpacity
+                  onPress={_pickImageDirect}
+                  style={{
+                    marginLeft: 8,
+                    borderWidth: 2,
+                    borderColor: "gray",
+                    borderRadius: 8,
+                    width: 40,
+                    height: 40,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <Text style={{ fontWeight: "bold", color: "gray" }}>+</Text>
+                </TouchableOpacity>
+              )}
+            </ScrollView>
+          )}
+          {!packageId && (
+            <ScrollView
+              contentContainerStyle={{
+                display: "flex",
+                flexDirection: "row",
+              }}
+              horizontal
+            >
+              {images.map((val, index) => (
+                <View style={{ position: "relative" }}>
+                  <Image
+                    key={index}
+                    source={{
+                      uri: val,
+                    }}
+                    style={{
+                      width: 120,
+                      height: 120,
+                      borderRadius: 4,
+                      marginLeft: 4,
+                    }}
+                  />
+                  <Pressable
+                    style={{
+                      backgroundColor: "white",
+                      position: "absolute",
+                      top: 0,
+                      right: 0,
+                      borderRadius: 4,
+                      padding: 2,
+                    }}
+                    onPress={() => deleteImage(val)}
+                  >
+                    <Ionicons
+                      size={22}
+                      name="close-circle-outline"
+                      color="#800020"
+                    />
+                  </Pressable>
+                </View>
+              ))}
+              {images?.length < 3 && (
+                <TouchableOpacity
+                  onPress={pickImage}
+                  style={{
+                    marginLeft: 8,
+                    borderWidth: 2,
+                    borderColor: "gray",
+                    borderRadius: 8,
+                    width: 40,
+                    height: 40,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <Text style={{ fontWeight: "bold", color: "gray" }}>+</Text>
+                </TouchableOpacity>
+              )}
+            </ScrollView>
+          )}
           <Formik
             // validationSchema={loginSchema}
             initialValues={{
@@ -253,6 +437,7 @@ export default function EventForm(props: any) {
                     onBlur={handleBlur("price")}
                     value={values.price}
                     style={styles.textInput}
+                    keyboardType="numeric"
                   />
                 </View>
                 <View style={styles.inputWrapper}>
@@ -284,7 +469,7 @@ export default function EventForm(props: any) {
                   >
                     <Text>State & City</Text>
                     <Text
-                      style={{ color: "#680101", fontWeight: "bold" }}
+                      style={{ color: "#800020", fontWeight: "bold" }}
                       onPress={() => setModalLocation(true)}
                     >
                       Select State & City
@@ -367,14 +552,15 @@ export default function EventForm(props: any) {
                   </View>
                 </View> */}
                 <View style={styles.inputWrapper}>
-                  <TouchableOpacity
+                  <Pressable
                     style={{
                       marginTop: 18,
-                      backgroundColor: "#c0392b",
+                      backgroundColor: !submitting ? "#800020" : "#bdc3c7",
                       padding: 12,
                       borderRadius: 6,
                     }}
                     onPress={handleSubmit}
+                    disabled={submitting}
                   >
                     <Text
                       style={{
@@ -385,7 +571,16 @@ export default function EventForm(props: any) {
                     >
                       {packageDetail?.id ? "Update" : "Create"} Package
                     </Text>
-                  </TouchableOpacity>
+                  </Pressable>
+                  <Text
+                    style={{
+                      color: "red",
+                      textAlign: "center",
+                      marginVertical: 8,
+                    }}
+                  >
+                    {resMessage}
+                  </Text>
                 </View>
               </View>
             )}

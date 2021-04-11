@@ -156,6 +156,13 @@ function TabOneScreen(props: any) {
 
   const menuList = [
     {
+      name: "Update Profile",
+      onPressFunc: () => {
+        navigation.navigate("ProfileUpdate");
+        setModalMenu(false);
+      },
+    },
+    {
       name: "Change Password",
       onPressFunc: () => {
         navigation.navigate("ChangePassword");
@@ -220,6 +227,7 @@ function TabOneScreen(props: any) {
     try {
       setLoading(true);
       const res = await getPackageList();
+      console.log("top vendor", res);
       setTopVendor(res?.data);
     } catch (error) {
       console.log({ error, res: error.response });
@@ -285,7 +293,7 @@ function TabOneScreen(props: any) {
           >
             <Text>Account Info</Text>
             <TouchableOpacity onPress={() => setModalMenu(false)}>
-              <Ionicons size={24} name="close" color="#c0392b" />
+              <Ionicons size={24} name="close" color="#800020" />
             </TouchableOpacity>
           </View>
           <View
@@ -312,7 +320,7 @@ function TabOneScreen(props: any) {
             ) : (
               <View
                 style={{
-                  backgroundColor: "#c0392b",
+                  backgroundColor: "#800020",
                   justifyContent: "center",
                   alignItems: "center",
                   width: 64,
@@ -322,7 +330,7 @@ function TabOneScreen(props: any) {
                 }}
               >
                 <Text style={{ color: "white", textTransform: "capitalize" }}>
-                  {myProfile?.customer_name?.charAt(0)}
+                  {myProfile?.name?.charAt(0)}
                 </Text>
               </View>
             )}
@@ -334,7 +342,6 @@ function TabOneScreen(props: any) {
             <View
               style={{
                 borderBottomWidth: 1,
-                marginHorizontal: -20,
               }}
             />
 
@@ -344,7 +351,6 @@ function TabOneScreen(props: any) {
                 style={{
                   paddingVertical: 12,
                   borderBottomWidth: 1,
-                  marginHorizontal: -20,
                   flexDirection: "row",
                   justifyContent: "space-between",
                   alignItems: "center",
@@ -371,6 +377,25 @@ function TabOneScreen(props: any) {
                 )}
               </TouchableOpacity>
             ))}
+
+            <Pressable
+              style={{
+                backgroundColor: "#428CAD",
+                marginTop: 60,
+                paddingVertical: 8,
+                borderRadius: 6,
+              }}
+            >
+              <Text
+                style={{
+                  color: "white",
+                  fontWeight: "bold",
+                  textAlign: "center",
+                }}
+              >
+                Share
+              </Text>
+            </Pressable>
           </View>
         </View>
       </Modal>
@@ -407,7 +432,7 @@ function TabOneScreen(props: any) {
             ) : (
               <View
                 style={{
-                  backgroundColor: "#c0392b",
+                  backgroundColor: "#800020",
                   justifyContent: "center",
                   alignItems: "center",
                   width: 30,
@@ -459,8 +484,8 @@ function TabOneScreen(props: any) {
                 marginVertical: 4,
               }}
             >
-              <Ionicons size={18} name="cash-outline" color="#c0392b" />
-              <Text style={{ color: "#c0392b" }}>{item.price}</Text>
+              <Ionicons size={18} name="cash-outline" color="#800020" />
+              <Text style={{ color: "#800020" }}>{item.price}</Text>
             </View>
           </View>
         </View>
@@ -468,184 +493,203 @@ function TabOneScreen(props: any) {
     );
   };
 
+  console.log({ vendorTypeList });
+
   return (
-    <View style={styles.container}>
-      <View
-        style={{
-          marginTop: -20,
-          paddingVertical: 12,
-          marginHorizontal: -20,
-          paddingHorizontal: 16,
-          backgroundColor: "#c0392b",
-          flexDirection: "row",
-          alignItems: "center",
-        }}
-      >
-        <TouchableOpacity
-          onPress={() => setModalMenu(true)}
-          style={{ position: "relative" }}
-        >
-          <Ionicons size={32} name="menu" color="#ffffff" />
-          {notifCount >= 1 && (
-            <View
-              style={{
-                position: "absolute",
-                right: 0,
-                backgroundColor: "#42AD88",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                borderRadius: 100,
-                width: 18,
-                height: 18,
-              }}
-            >
-              <Text style={{ color: "white", fontSize: 10 }}>{notifCount}</Text>
-            </View>
-          )}
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => navigation.navigate("SearchResult")}
+    <>
+      <View style={{ backgroundColor: "#800020", height: 20 }} />
+      <View style={styles.container}>
+        <View
           style={{
-            width: "90%",
-            marginLeft: 8,
-            backgroundColor: "#ecf0f1",
-            borderRadius: 8,
+            marginTop: -20,
+            paddingVertical: 12,
+            marginHorizontal: -20,
+            paddingHorizontal: 16,
+            backgroundColor: "#800020",
             flexDirection: "row",
-            justifyContent: "flex-start",
             alignItems: "center",
-            paddingHorizontal: 6,
           }}
         >
-          <Ionicons size={18} name="search" color="#bdc3c7" />
-          <TextInput placeholder="Search" style={{ padding: 6 }} />
-        </TouchableOpacity>
-      </View>
-      {loading && (
-        <View style={{ marginVertical: 30 }}>
-          <ActivityIndicator size="large" color="#680101" />
-        </View>
-      )}
-      {!loading && !myProfile?.phone && (
-        <Pressable onPress={() => navigation.navigate("ProfileUpdate")}>
-          <View
-            style={{
-              borderColor: "#680101",
-              borderWidth: 1,
-              marginTop: 8,
-              borderRadius: 6,
-              padding: 8,
-            }}
+          <TouchableOpacity
+            onPress={() => setModalMenu(true)}
+            style={{ position: "relative" }}
           >
-            <Text>
-              Please complete your profile{" "}
-              <Text
+            <Ionicons size={32} name="menu" color="#ffffff" />
+            {notifCount >= 1 && (
+              <View
                 style={{
-                  color: "#680101",
+                  position: "absolute",
+                  right: 0,
+                  backgroundColor: "#42AD88",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  borderRadius: 100,
+                  width: 18,
+                  height: 18,
                 }}
               >
-                here.
-              </Text>
-            </Text>
-          </View>
-        </Pressable>
-      )}
-      {!loading && (
-        <View style={{ marginVertical: 12 }}>
-          <View
-            style={{ flexDirection: "row", justifyContent: "space-between" }}
-          >
-            <Text style={{ fontSize: 16, color: "#c0392b", fontWeight: "700" }}>
-              Vendor Category
-            </Text>
-            <TouchableOpacity
-              onPress={() => navigation.navigate("CategoryList")}
-            >
-              <Text>All</Text>
-            </TouchableOpacity>
-          </View>
-          <View
+                <Text style={{ color: "white", fontSize: 10 }}>
+                  {notifCount}
+                </Text>
+              </View>
+            )}
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("SearchResult")}
             style={{
+              width: "90%",
+              marginLeft: 8,
+              backgroundColor: "#ecf0f1",
+              borderRadius: 8,
               flexDirection: "row",
-              justifyContent: "space-around",
-              marginTop: 4,
+              justifyContent: "flex-start",
+              alignItems: "center",
+              paddingHorizontal: 6,
+              paddingVertical: 8,
             }}
           >
-            {vendorTypeList.map((val, index) => {
-              if (index <= 4) {
-                return (
-                  <View
-                    key={index}
-                    style={{
-                      justifyContent: "center",
-                      alignItems: "center",
-                      marginVertical: 8,
-                    }}
-                  >
-                    <View
+            <Ionicons size={18} name="search" color="#bdc3c7" />
+            <Text style={{ color: "#bdc3c7" }}>Search</Text>
+            {/* <TextInput placeholder="Search" style={{ padding: 6 }} /> */}
+          </TouchableOpacity>
+        </View>
+        {loading && (
+          <View style={{ marginVertical: 30 }}>
+            <ActivityIndicator size="large" color="#800020" />
+          </View>
+        )}
+        {!loading && !myProfile?.phone && (
+          <Pressable onPress={() => navigation.navigate("ProfileUpdate")}>
+            <View
+              style={{
+                borderColor: "#800020",
+                borderWidth: 1,
+                marginTop: 8,
+                borderRadius: 6,
+                padding: 8,
+              }}
+            >
+              <Text>
+                Please complete your profile{" "}
+                <Text
+                  style={{
+                    color: "#800020",
+                  }}
+                >
+                  here.
+                </Text>
+              </Text>
+            </View>
+          </Pressable>
+        )}
+        {!loading && (
+          <View style={{ marginVertical: 12 }}>
+            <View
+              style={{ flexDirection: "row", justifyContent: "space-between" }}
+            >
+              <Text
+                style={{ fontSize: 16, color: "#800020", fontWeight: "700" }}
+              >
+                Vendor Category
+              </Text>
+              <TouchableOpacity
+                onPress={() => navigation.navigate("CategoryList")}
+              >
+                <Text>All</Text>
+              </TouchableOpacity>
+            </View>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-around",
+                marginTop: 4,
+              }}
+            >
+              {vendorTypeList.map((val, index) => {
+                if (index < 4) {
+                  return (
+                    <Pressable
+                      key={index}
                       style={{
-                        width: 45,
-                        height: 45,
-                        borderRadius: 4,
+                        justifyContent: "center",
+                        alignItems: "center",
+                        marginVertical: 8,
                       }}
+                      onPress={() =>
+                        navigation.navigate("ListPackageByCategory", {
+                          typeVendorId: val?.id,
+                          typeVendorName: val?.name,
+                        })
+                      }
                     >
                       <View
                         style={{
-                          backgroundColor: "#680101",
-                          flex: 1,
-                          justifyContent: "center",
-                          alignItems: "center",
+                          width: 45,
+                          height: 45,
+                          borderRadius: 4,
                         }}
                       >
-                        <Image
-                          source={{
-                            uri: `https://api.mooxevents.com/api/image/mooxapps/${val.img_vendor_type}`,
-                          }}
+                        <View
                           style={{
-                            width: 36,
-                            height: 36,
-                            borderRadius: 100,
+                            backgroundColor: "#800020",
+                            flex: 1,
+                            justifyContent: "center",
+                            alignItems: "center",
                           }}
-                        />
+                        >
+                          <Image
+                            source={{
+                              uri: `https://api.mooxevents.com/api/image/mooxapps/${val.img_vendor_type}`,
+                            }}
+                            style={{
+                              width: 36,
+                              height: 36,
+                              borderRadius: 100,
+                            }}
+                          />
+                        </View>
                       </View>
-                    </View>
-                    <Text>{val.name}</Text>
-                  </View>
-                );
-              }
-            })}
+                      <Text style={{ textTransform: "capitalize" }}>
+                        {val.name}
+                      </Text>
+                    </Pressable>
+                  );
+                }
+              })}
+            </View>
           </View>
-        </View>
-      )}
-      {!loading && (
-        <View style={{ marginVertical: 12 }}>
-          <Text style={{ fontSize: 16, color: "#c0392b", fontWeight: "700" }}>
-            Explore Top Vendor
-          </Text>
+        )}
+        {!loading && (
           <View style={{ marginVertical: 12 }}>
-            <Carousel
-              // ref={(ref) => (this.carousel = ref)}
-              // layout={"default"}
-              data={topVendor}
-              renderItem={({ item }: any) => _renderSlideItem(item)}
-              sliderWidth={widthScreen}
-              itemWidth={widthScreen * 0.7}
-              contentContainerCustomStyle={{
-                paddingLeft: 6,
-              }}
-              useScrollView
-            />
+            <Text style={{ fontSize: 16, color: "#800020", fontWeight: "700" }}>
+              Explore Top Vendor
+            </Text>
+            <View style={{ marginVertical: 12 }}>
+              <Carousel
+                // ref={(ref) => (this.carousel = ref)}
+                // layout={"default"}
+                data={topVendor}
+                renderItem={({ item }: any) => _renderSlideItem(item)}
+                sliderWidth={widthScreen}
+                itemWidth={widthScreen * 0.7}
+                contentContainerCustomStyle={{
+                  paddingLeft: 6,
+                }}
+                useScrollView
+              />
+            </View>
           </View>
-        </View>
-      )}
-      {_renderModalMenu()}
-    </View>
+        )}
+        {_renderModalMenu()}
+      </View>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 20,
+    // marginTop: 20,
     padding: 20,
   },
   title: {

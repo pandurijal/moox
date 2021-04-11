@@ -18,7 +18,7 @@ export default function ProfileSetting(props: any) {
       >
         <TouchableOpacity
           style={{
-            backgroundColor: "#c0392b",
+            backgroundColor: "#800020",
             justifyContent: "center",
             alignItems: "center",
             width: 64,
@@ -42,7 +42,7 @@ export default function ProfileSetting(props: any) {
         <View style={styles.inputWrapper}>
           <TouchableOpacity
             style={{
-              backgroundColor: "#c0392b",
+              backgroundColor: "#800020",
               padding: 12,
               borderRadius: 6,
             }}

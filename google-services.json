@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "917298788494-8nmki8up268ibo5pp8886pe3et4hrep0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.moox",
+            "certificate_hash": "e0161071396c49e9b4a065cb29199a60e42fabfd"
+          }
+        },
+        {
           "client_id": "917298788494-6eo4pj7lepa6khul04hs3hg7p76jondh.apps.googleusercontent.com",
           "client_type": 3
         }

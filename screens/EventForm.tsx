@@ -54,8 +54,8 @@ export default function EventForm(props: any) {
         name: values.name,
         date: moment(date).format("YYYY-MM-DD hh:mm:ss"),
         id_event_category: 2,
-        description: values.description,
-        address: values.address,
+        description: values?.description ?? "",
+        address: values?.address ?? "",
       };
       console.log({ payload });
       if (eventDetail?.id) {
@@ -79,7 +79,7 @@ export default function EventForm(props: any) {
     <View style={styles.container}>
       <Text
         style={{
-          color: "#680101",
+          color: "#800020",
           fontWeight: "bold",
           fontSize: 18,
         }}
@@ -133,6 +133,7 @@ export default function EventForm(props: any) {
               </Pressable>
               {showDatePicker && (
                 <DateTimePicker
+                  minimumDate={new Date()}
                   testID="dateTimePicker"
                   value={date}
                   mode={"date"}
@@ -172,7 +173,7 @@ export default function EventForm(props: any) {
                 style={styles.textInput}
               />
             </View>
-            <View style={styles.inputWrapper}>
+            {/* <View style={styles.inputWrapper}>
               <Text>Event Address</Text>
               <TextInput
                 autoCapitalize="none"
@@ -181,11 +182,11 @@ export default function EventForm(props: any) {
                 value={values.address}
                 style={styles.textInput}
               />
-            </View>
+            </View> */}
             <View style={styles.inputWrapper}>
               <TouchableOpacity
                 style={{
-                  backgroundColor: "#c0392b",
+                  backgroundColor: "#800020",
                   padding: 12,
                   borderRadius: 6,
                 }}

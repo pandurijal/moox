@@ -33,7 +33,7 @@ function BottomTabNavigator(props: any) {
       tabBarOptions={{ activeTintColor: Colors[colorScheme].tint }}
       screenOptions={{
         headerShown: true,
-        headerStyle: { backgroundColor: "#c0392b" },
+        headerStyle: { backgroundColor: "#800020" },
         headerTitleStyle: { color: "#fff" },
         headerTintColor: "#fff",
       }}
@@ -143,7 +143,7 @@ function TabTwoNavigator() {
         component={TabTwoScreen}
         options={({ navigation }) => ({
           headerTitle: "My Events",
-          headerStyle: { backgroundColor: "#c0392b" },
+          headerStyle: { backgroundColor: "#800020" },
           headerTitleStyle: { color: "#fff" },
           headerTintColor: "#fff",
           headerRight: () => (
@@ -171,7 +171,7 @@ function TabThreeNavigator() {
         component={TabThreeScreen}
         options={{
           headerTitle: "Gift",
-          headerStyle: { backgroundColor: "#c0392b" },
+          headerStyle: { backgroundColor: "#800020" },
           headerTitleStyle: { color: "#fff" },
           headerTintColor: "#fff",
         }}
@@ -190,7 +190,7 @@ function TabTodoNavigator() {
         component={TabTodo}
         options={{
           headerTitle: "Todos",
-          headerStyle: { backgroundColor: "#c0392b" },
+          headerStyle: { backgroundColor: "#800020" },
           headerTitleStyle: { color: "#fff" },
           headerTintColor: "#fff",
         }}
@@ -209,7 +209,7 @@ function TabBookingNavigator() {
         component={TabBooking}
         options={{
           headerTitle: "Bookings",
-          headerStyle: { backgroundColor: "#c0392b" },
+          headerStyle: { backgroundColor: "#800020" },
           headerTitleStyle: { color: "#fff" },
           headerTintColor: "#fff",
         }}
@@ -228,7 +228,7 @@ function TabProfileNavigator() {
         component={TabProfile}
         options={{
           headerTitle: "Profile",
-          headerStyle: { backgroundColor: "#c0392b" },
+          headerStyle: { backgroundColor: "#800020" },
           headerTitleStyle: { color: "#fff" },
           headerTintColor: "#fff",
         }}

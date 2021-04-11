@@ -33,7 +33,7 @@ export default function TabTodo(props: any) {
     <View style={styles.container}>
       {loading && (
         <View style={{ marginVertical: 30 }}>
-          <ActivityIndicator size="large" color="#680101" />
+          <ActivityIndicator size="large" color="#800020" />
         </View>
       )}
       {todoList?.map((val, index) => (
@@ -44,8 +44,9 @@ export default function TabTodo(props: any) {
             flexDirection: "row",
             justifyContent: "space-between",
             margin: 12,
+
             padding: 12,
-            elevation: 2,
+            borderWidth: 1,
             borderRadius: 8,
           }}
         >
@@ -58,23 +59,29 @@ export default function TabTodo(props: any) {
           </View>
         </TouchableOpacity>
       ))}
-      <TouchableOpacity
-        onPress={() => navigation.navigate("TodoForm")}
-        style={{
-          borderStyle: "dashed",
-          borderRadius: 8,
-          borderWidth: 1,
-          padding: 8,
-          margin: 12,
-          borderColor: "#680101",
-        }}
-      >
-        <Text
-          style={{ textAlign: "center", color: "#680101", fontWeight: "bold" }}
+      {!loading && (
+        <TouchableOpacity
+          onPress={() => navigation.navigate("TodoForm")}
+          style={{
+            borderStyle: "dashed",
+            borderRadius: 8,
+            borderWidth: 1,
+            padding: 8,
+            margin: 12,
+            borderColor: "#800020",
+          }}
         >
-          + Add Todo
-        </Text>
-      </TouchableOpacity>
+          <Text
+            style={{
+              textAlign: "center",
+              color: "#800020",
+              fontWeight: "bold",
+            }}
+          >
+            + Add Todo
+          </Text>
+        </TouchableOpacity>
+      )}
       {/* <Text style={styles.title}>Tab Three</Text>
       <View
         style={styles.separator}

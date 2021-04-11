@@ -60,7 +60,7 @@ export function SelectStateCity(props: any) {
       }
     };
 
-    if (!!selectedState) {
+    if (selectedState) {
       _fetchCityList();
     }
   }, [selectedState]);
@@ -120,13 +120,17 @@ export function SelectStateCity(props: any) {
                     alignItems: "center",
                   }}
                 >
-                  <TextInput
-                    placeholder="Search State..."
-                    style={{ padding: 2, width: "80%" }}
-                    value={textState}
-                    onChangeText={(val) => setTextState(val)}
-                    editable={!selectedState ? true : false}
-                  />
+                  {selectedState ? (
+                    <Text style={{ color: "#800020" }}>{textState}</Text>
+                  ) : (
+                    <TextInput
+                      placeholder="Search State..."
+                      style={{ padding: 2, width: "80%" }}
+                      value={textState}
+                      onChangeText={(val) => setTextState(val)}
+                      editable={!selectedState ? true : false}
+                    />
+                  )}
                   <Text
                     onPress={() => {
                       setSelectedState("");
@@ -134,7 +138,7 @@ export function SelectStateCity(props: any) {
                       setSelectedCity("");
                       setTextCity("");
                     }}
-                    style={{ fontSize: 12, color: "#680101" }}
+                    style={{ fontSize: 12, color: "#800020" }}
                   >
                     Clear
                   </Text>
@@ -184,19 +188,23 @@ export function SelectStateCity(props: any) {
                       alignItems: "center",
                     }}
                   >
-                    <TextInput
-                      placeholder="Search City..."
-                      style={{ padding: 2 }}
-                      value={textCity}
-                      onChangeText={(val) => setTextCity(val)}
-                      editable={!selectedCity ? true : false}
-                    />
+                    {selectedCity ? (
+                      <Text style={{ color: "#800020" }}>{textCity}</Text>
+                    ) : (
+                      <TextInput
+                        placeholder="Search City..."
+                        style={{ padding: 2 }}
+                        value={textCity}
+                        onChangeText={(val) => setTextCity(val)}
+                        editable={!selectedCity ? true : false}
+                      />
+                    )}
                     <Text
                       onPress={() => {
                         setSelectedCity("");
                         setTextCity("");
                       }}
-                      style={{ fontSize: 12, color: "#680101" }}
+                      style={{ fontSize: 12, color: "#800020" }}
                     >
                       Clear
                     </Text>
@@ -233,7 +241,7 @@ export function SelectStateCity(props: any) {
             <TouchableOpacity
               style={{
                 backgroundColor:
-                  !!selectedState && !!selectedCity ? "#c0392b" : "#bdc3c7",
+                  !!selectedState && !!selectedCity ? "#800020" : "#bdc3c7",
                 padding: 12,
                 borderRadius: 6,
               }}
@@ -247,7 +255,7 @@ export function SelectStateCity(props: any) {
                   textAlign: "center",
                 }}
               >
-                Apply Filter
+                Select State & City
               </Text>
             </TouchableOpacity>
           </View>

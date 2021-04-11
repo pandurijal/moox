@@ -6,6 +6,7 @@ import {
   TextInput,
   Platform,
   Image,
+  ScrollView,
 } from "react-native";
 import Constants from "expo-constants";
 import * as Notifications from "expo-notifications";
@@ -20,6 +21,7 @@ import {
 } from "./../store/actions/userAction";
 import { userLogin } from "./../services";
 import * as Google from "expo-google-app-auth";
+import * as GoogleSignIn from "expo-google-sign-in";
 
 import { Text, View } from "../components/Themed";
 
@@ -36,6 +38,7 @@ function Login(props: any) {
   const [loading, setLoading] = useState(false);
   const [expoToken, setExpoToken] = useState("");
   const [resMessage, setResMessage] = useState("");
+  const [msg, setMsg] = useState("");
 
   const { navigation, userLoginAction, userGoogleAuthAction, userData } = props;
 
@@ -43,7 +46,16 @@ function Login(props: any) {
 
   useEffect(() => {
     registerForPushNotificationsAsync();
+    initAsync();
   }, []);
+
+  const initAsync = async () => {
+    await GoogleSignIn.initAsync({
+      clientId:
+        "917298788494-8nmki8up268ibo5pp8886pe3et4hrep0.apps.googleusercontent.com",
+      scopes: ["profile", "email"],
+    });
+  };
 
   async function registerForPushNotificationsAsync() {
     let token;
@@ -102,193 +114,236 @@ function Login(props: any) {
   };
 
   const _submitLoginGoogle = async () => {
-    const resGoogle = await Google.logInAsync({
-      clientId:
-        "952616632052-9om791edneurtr8eg006ld4etg83pv7n.apps.googleusercontent.com",
-      androidStandaloneAppClientId:
-        "952616632052-9om791edneurtr8eg006ld4etg83pv7n.apps.googleusercontent.com",
-      scopes: ["profile", "email"],
-    });
-
-    if (resGoogle?.type === "success") {
-      try {
-        console.log({ resGoogle });
-        setResMessage("");
-        setLoading(true);
-        const payload = {
-          token: resGoogle?.idToken,
-          notify: expoToken,
-        };
-        console.log({ payload });
-        console.log({ resGoogle, payload });
-        await userGoogleAuthAction(payload);
-        const { userData } = props;
-        console.log({ userData });
-        if (!userData?.loggedIn) {
-          setResMessage(userData?.errMessage);
+    try {
+      await GoogleSignIn.askForPlayServicesAsync();
+      const resGoogle = await GoogleSignIn.signInAsync();
+      if (resGoogle?.type === "success") {
+        try {
+          console.log({ resGoogle });
+          setResMessage("");
+          // setMsg(JSON.stringify(resGoogle));
+          setLoading(true);
+          const payload = {
+            token: resGoogle?.user?.auth?.idToken,
+            notify: expoToken,
+          };
+          console.log({ payload });
+          console.log({ resGoogle, payload });
+          await userGoogleAuthAction(payload);
+          const { userData } = props;
+          console.log({ userData });
+          if (!userData?.loggedIn) {
+            setResMessage(userData?.errMessage);
+          }
+        } catch (error) {
+          const errMessage = "Registration failed. Unknown error occured.";
+          setResMessage(errMessage);
+          console.error(error);
+        } finally {
+          setLoading(false);
         }
-      } catch (error) {
-        const errMessage = "Registration failed. Unknown error occured.";
-        setResMessage(errMessage);
-        console.error(error);
-      } finally {
-        setLoading(false);
       }
+    } catch ({ message }) {
+      alert("login: Error:" + message);
     }
   };
 
+  // const _submitLoginGoogle = async () => {
+  //   const resGoogle = await Google.logInAsync({
+  //     clientId:
+  //       "952616632052-9om791edneurtr8eg006ld4etg83pv7n.apps.googleusercontent.com",
+  //     androidStandaloneAppClientId:
+  //       "952616632052-9om791edneurtr8eg006ld4etg83pv7n.apps.googleusercontent.com",
+  //     scopes: ["profile", "email"],
+  //   });
+
+  //   if (resGoogle?.type === "success") {
+  //     try {
+  //       console.log({ resGoogle });
+  //       setResMessage("");
+  //       setLoading(true);
+  //       const payload = {
+  //         token: resGoogle?.idToken,
+  //         notify: expoToken,
+  //       };
+  //       console.log({ payload });
+  //       console.log({ resGoogle, payload });
+  //       await userGoogleAuthAction(payload);
+  //       const { userData } = props;
+  //       console.log({ userData });
+  //       if (!userData?.loggedIn) {
+  //         setResMessage(userData?.errMessage);
+  //       }
+  //     } catch (error) {
+  //       const errMessage = "Registration failed. Unknown error occured.";
+  //       setResMessage(errMessage);
+  //       console.error(error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   }
+  // };
+
   return (
-    <View style={styles.container}>
-      <Text style={{ fontSize: 18, fontWeight: "bold", color: "#680101" }}>
-        Welcome to Moox Events
-      </Text>
-      {/* <Text>{expoToken}</Text> */}
-      <Formik
-        validationSchema={loginSchema}
-        initialValues={{
-          email: "",
-          password: "",
-        }}
-        onSubmit={handleSubmitLogin}
-      >
-        {({
-          handleChange,
-          handleBlur,
-          handleSubmit,
-          values,
-          errors,
-          touched,
-        }) => (
-          <View>
-            <View style={styles.inputWrapper}>
-              <Text>Email</Text>
-              <TextInput
-                autoCapitalize="none"
-                onChangeText={handleChange("email")}
-                onBlur={handleBlur("email")}
-                value={values.email}
-                style={styles.textInput}
-              />
-              {touched.email && errors.email && (
-                <Text style={{ color: "red", fontSize: 12 }}>
-                  {errors.email}
-                </Text>
-              )}
-            </View>
-            <View style={styles.inputWrapper}>
-              <Text>Password</Text>
-              <TextInput
-                autoCapitalize="none"
-                onChangeText={handleChange("password")}
-                onBlur={handleBlur("password")}
-                value={values.password}
-                style={styles.textInput}
-                secureTextEntry
-              />
-              {touched.password && errors.password && (
-                <Text style={{ color: "red", fontSize: 12 }}>
-                  {errors.password}
-                </Text>
-              )}
-            </View>
-            <View style={styles.inputWrapper}>
-              <TouchableOpacity
+    <>
+      <ScrollView>
+        <View style={styles.container}>
+          <Text style={{ fontSize: 18, fontWeight: "bold", color: "#800020" }}>
+            Welcome to Moox Events
+          </Text>
+          <Text>{msg}</Text>
+          <Formik
+            validationSchema={loginSchema}
+            initialValues={{
+              email: "",
+              password: "",
+            }}
+            onSubmit={handleSubmitLogin}
+          >
+            {({
+              handleChange,
+              handleBlur,
+              handleSubmit,
+              values,
+              errors,
+              touched,
+            }) => (
+              <View>
+                <View style={styles.inputWrapper}>
+                  <Text>Email</Text>
+                  <TextInput
+                    autoCapitalize="none"
+                    onChangeText={handleChange("email")}
+                    onBlur={handleBlur("email")}
+                    value={values.email}
+                    style={styles.textInput}
+                  />
+                  {touched.email && errors.email && (
+                    <Text style={{ color: "red", fontSize: 12 }}>
+                      {errors.email}
+                    </Text>
+                  )}
+                </View>
+                <View style={styles.inputWrapper}>
+                  <Text>Password</Text>
+                  <TextInput
+                    autoCapitalize="none"
+                    onChangeText={handleChange("password")}
+                    onBlur={handleBlur("password")}
+                    value={values.password}
+                    style={styles.textInput}
+                    secureTextEntry
+                  />
+                  {touched.password && errors.password && (
+                    <Text style={{ color: "red", fontSize: 12 }}>
+                      {errors.password}
+                    </Text>
+                  )}
+                </View>
+                <View style={styles.inputWrapper}>
+                  <TouchableOpacity
+                    style={{
+                      backgroundColor: !userData?.loading
+                        ? "#800020"
+                        : "#bdc3c7",
+                      padding: 12,
+                      borderRadius: 6,
+                    }}
+                    onPress={handleSubmit}
+                    disabled={userData?.loading}
+                  >
+                    <Text
+                      style={{
+                        color: "white",
+                        fontWeight: "bold",
+                        textAlign: "center",
+                      }}
+                    >
+                      Login
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            )}
+          </Formik>
+          <Text style={{ color: "red", fontSize: 12, textAlign: "center" }}>
+            {resMessage}
+          </Text>
+          <View style={{ alignItems: "flex-end" }}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("ForgotPassword")}
+            >
+              <Text style={{ color: "#800020" }}>Forgot Password?</Text>
+            </TouchableOpacity>
+          </View>
+          <View
+            style={{
+              marginTop: 18,
+              alignItems: "center",
+            }}
+          >
+            <Text>Login faster</Text>
+            <TouchableOpacity
+              style={{
+                marginTop: 4,
+                flexDirection: "row",
+                justifyContent: "center",
+                alignItems: "center",
+                paddingVertical: 8,
+                paddingHorizontal: 16,
+                width: "35%",
+                borderWidth: 1,
+                borderRadius: 4,
+                borderColor: "#e0e0e0",
+              }}
+              onPress={_submitLoginGoogle}
+            >
+              <Image
+                source={require("./../assets/images/icon-google.png")}
                 style={{
-                  backgroundColor: !userData?.loading ? "#c0392b" : "#bdc3c7",
-                  padding: 12,
-                  borderRadius: 6,
+                  width: 20,
+                  height: 20,
+                  marginRight: 8,
                 }}
-                onPress={handleSubmit}
-                disabled={userData?.loading}
+              />
+              <Text style={{ fontWeight: "bold", fontSize: 16, marginLeft: 6 }}>
+                Google
+              </Text>
+            </TouchableOpacity>
+          </View>
+          <View
+            style={{
+              justifyContent: "center",
+              alignItems: "center",
+              marginTop: 18,
+            }}
+          >
+            <Text>Don't have account? Sign Up as</Text>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <TouchableOpacity
+                onPress={() => navigation.navigate("RegisterCustomer")}
               >
-                <Text
-                  style={{
-                    color: "white",
-                    fontWeight: "bold",
-                    textAlign: "center",
-                  }}
-                >
-                  Login
-                </Text>
+                <Text style={{ fontWeight: "bold" }}>Customer</Text>
+              </TouchableOpacity>
+              <View
+                style={{ marginHorizontal: 8, borderRightWidth: 1, height: 12 }}
+              />
+              <TouchableOpacity
+                onPress={() => navigation.navigate("RegisterVendor")}
+              >
+                <Text style={{ fontWeight: "bold" }}>Vendor</Text>
               </TouchableOpacity>
             </View>
           </View>
-        )}
-      </Formik>
-      <Text style={{ color: "red", fontSize: 12, textAlign: "center" }}>
-        {resMessage}
-      </Text>
-      <View style={{ alignItems: "flex-end" }}>
-        <TouchableOpacity onPress={() => navigation.navigate("ForgotPassword")}>
-          <Text style={{ color: "#680101" }}>Forgot Password?</Text>
-        </TouchableOpacity>
-      </View>
-      <View
-        style={{
-          marginTop: 18,
-          alignItems: "center",
-        }}
-      >
-        <Text>Login faster</Text>
-        <TouchableOpacity
-          style={{
-            marginTop: 4,
-            flexDirection: "row",
-            justifyContent: "center",
-            alignItems: "center",
-            paddingVertical: 8,
-            paddingHorizontal: 16,
-            width: "35%",
-            borderWidth: 1,
-            borderRadius: 4,
-            borderColor: "#e0e0e0",
-          }}
-          onPress={_submitLoginGoogle}
-        >
-          <Image
-            source={require("./../assets/images/icon-google.png")}
-            style={{
-              width: 20,
-              height: 20,
-              marginRight: 8,
-            }}
-          />
-          <Text style={{ fontWeight: "bold", fontSize: 16, marginLeft: 6 }}>
-            Google
-          </Text>
-        </TouchableOpacity>
-      </View>
-      <View
-        style={{
-          justifyContent: "center",
-          alignItems: "center",
-          marginTop: 18,
-        }}
-      >
-        <Text>Don't have account? Sign Up as</Text>
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <TouchableOpacity
-            onPress={() => navigation.navigate("RegisterCustomer")}
-          >
-            <Text style={{ fontWeight: "bold" }}>Customer</Text>
-          </TouchableOpacity>
-          <View
-            style={{ marginHorizontal: 8, borderRightWidth: 1, height: 12 }}
-          />
-          <TouchableOpacity
-            onPress={() => navigation.navigate("RegisterVendor")}
-          >
-            <Text style={{ fontWeight: "bold" }}>Vendor</Text>
-          </TouchableOpacity>
         </View>
-      </View>
-    </View>
+      </ScrollView>
+    </>
   );
 }
 

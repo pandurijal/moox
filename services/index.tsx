@@ -125,6 +125,12 @@ export const getPackageSearch = (payload: any) => {
   return baseURL.post("/package_vendor/find", payload).then((res) => res.data);
 };
 
+export const getPackageByVendor = (typeVendorId: any) => {
+  return baseURL
+    .get(`/package_vendor/find_type_vendor/${typeVendorId}`)
+    .then((res) => res.data);
+};
+
 export const getPackageDetail = (packageId: any) => {
   return baseURL.get(`/package_vendor/${packageId}`).then((res) => res.data);
 };
@@ -142,6 +148,22 @@ export const postPackage = (payload: any) => {
 export const updatePackage = (packageId: any, payload: any) => {
   return baseURL
     .put(`/package_vendor/${packageId}`, payload)
+    .then((res) => res.data);
+};
+
+export const updatePackageAddImage = (payload: any) => {
+  return baseURL
+    .post("/package_vendor_image", payload, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    })
+    .then((res) => res.data);
+};
+
+export const updatePackageDeleteImage = (imageId: any) => {
+  return baseURL
+    .delete(`/package_vendor_image/${imageId}`)
     .then((res) => res.data);
 };
 
@@ -185,6 +207,10 @@ export const updateTodo = (todoListId: any, payload: any) => {
 
 export const getTodoDetail = (todoId: any) => {
   return baseURL.get(`/todo/${todoId}`).then((res) => res.data);
+};
+
+export const deleteTodoDetail = (todoId: any) => {
+  return baseURL.delete(`/todo/${todoId}`).then((res) => res.data);
 };
 
 export const getMyBooking = (payload: any) => {

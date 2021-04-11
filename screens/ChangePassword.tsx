@@ -46,7 +46,7 @@ export default function ChangePassword(props: any) {
 
   return (
     <View style={styles.container}>
-      <Text style={{ fontSize: 18, fontWeight: "bold", color: "#680101" }}>
+      <Text style={{ fontSize: 18, fontWeight: "bold", color: "#800020" }}>
         Change Password
       </Text>
       <Text style={{ marginVertical: 12 }}>
@@ -102,7 +102,7 @@ export default function ChangePassword(props: any) {
             <View style={styles.inputWrapper}>
               <TouchableOpacity
                 style={{
-                  backgroundColor: !loading ? "#c0392b" : "#bdc3c7",
+                  backgroundColor: !loading ? "#800020" : "#bdc3c7",
                   padding: 12,
                   marginTop: 8,
                   borderRadius: 6,

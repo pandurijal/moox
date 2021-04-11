@@ -71,8 +71,8 @@ export default function ProfileVendor(props: any) {
               marginVertical: 4,
             }}
           >
-            <Ionicons size={18} name="cash-outline" color="#c0392b" />
-            <Text style={{ color: "#c0392b" }}>2800</Text>
+            <Ionicons size={18} name="cash-outline" color="#800020" />
+            <Text style={{ color: "#800020" }}>2800</Text>
           </View>
         </View>
 

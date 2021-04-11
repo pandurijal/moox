@@ -28,6 +28,7 @@ import DetailPackage from "./../screens/DetailPackage";
 import PackageForm from "./../screens/PackageForm";
 import ListReview from "./../screens/ListReview";
 import SearchResult from "./../screens/SearchResult";
+import ListPackageByCategory from "./../screens/ListPackageByCategory";
 import CategoryList from "./../screens/CategoryList";
 import TodoForm from "./../screens/TodoForm";
 import TodoDetail from "./../screens/TodoDetail";
@@ -75,7 +76,7 @@ const RootNavigator = connect((state: any) => ({
     <Stack.Navigator
       screenOptions={{
         headerShown: true,
-        headerStyle: { backgroundColor: "#c0392b" },
+        headerStyle: { backgroundColor: "#800020" },
         headerTitleStyle: { color: "#fff" },
         headerTintColor: "#fff",
       }}
@@ -85,7 +86,10 @@ const RootNavigator = connect((state: any) => ({
           <Stack.Screen
             name="Root"
             component={BottomTabNavigator}
-            options={{ headerShown: false }}
+            options={{
+              headerShown: false,
+              headerStyle: { backgroundColor: "#800020" },
+            }}
           />
           <Stack.Screen
             name="Profile"
@@ -95,7 +99,12 @@ const RootNavigator = connect((state: any) => ({
           <Stack.Screen
             name="CategoryList"
             component={CategoryList}
-            options={{ headerShown: false }}
+            options={{
+              headerTitle: "Category List",
+              headerStyle: { backgroundColor: "#800020" },
+              headerTitleStyle: { color: "#fff" },
+              headerTintColor: "#fff",
+            }}
           />
           <Stack.Screen
             name="ProfileSetting"
@@ -125,7 +134,7 @@ const RootNavigator = connect((state: any) => ({
           <Stack.Screen
             name="DetailPackage"
             component={DetailPackage}
-            options={{ headerTitle: "Regency Blabla..." }}
+            options={{ headerTitle: "Detail Package" }}
           />
           <Stack.Screen
             name="PackageForm"
@@ -146,6 +155,11 @@ const RootNavigator = connect((state: any) => ({
             name="SearchResult"
             component={SearchResult}
             options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="ListPackageByCategory"
+            component={ListPackageByCategory}
+            options={{ headerTitle: "List Package" }}
           />
           <Stack.Screen
             name="TodoForm"

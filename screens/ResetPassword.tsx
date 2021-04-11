@@ -27,7 +27,7 @@ export default function ResetPassword(props: any) {
         <View style={styles.inputWrapper}>
           <TouchableOpacity
             style={{
-              backgroundColor: "#c0392b",
+              backgroundColor: "#800020",
               padding: 12,
               borderRadius: 6,
             }}

@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
-import { Pressable, StyleSheet, TouchableOpacity, Image } from "react-native";
+import {
+  Pressable,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  ScrollView,
+} from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { userLogoutAction } from "./../store/actions/userAction";
 import { Ionicons } from "@expo/vector-icons";
@@ -14,12 +20,15 @@ function TabProfile(props: any) {
   const isFocused = useIsFocused();
 
   const [myProfile, setMyProfile] = useState({});
-  const [packageDetail, setPackageDetail] = useState([]);
+  const [packageDetail, setPackageDetail] = useState({});
+  const [packageDetailImages, setPackageDetailImages] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const { navigation, userLogoutAction, auth } = props;
 
   const userData = auth?.userData?.data;
+
+  console.log({ packageDetail });
 
   const _getMyProfile = async () => {
     try {
@@ -61,14 +70,16 @@ function TabProfile(props: any) {
         console.log("my package", res);
         if (res?.data?.length) {
           setPackageDetail(res?.data?.[res?.data?.length - 1]);
+          setPackageDetailImages(res?.image);
         }
       } catch (error) {
+        console.log({ error, res: error.response });
         console.error("my package", error);
       }
     };
 
     _getMyPackage();
-  }, [tab]);
+  }, [tab, isFocused]);
 
   const menuList = [
     // { name: "Vendor", onPressFunc: () => navigation.navigate("ProfileVendor") },
@@ -103,7 +114,7 @@ function TabProfile(props: any) {
     <>
       <View
         style={{
-          backgroundColor: "#c0392b",
+          backgroundColor: "#800020",
           flexDirection: "row",
           justifyContent: "space-around",
           alignItems: "center",
@@ -163,7 +174,7 @@ function TabProfile(props: any) {
             ) : (
               <View
                 style={{
-                  backgroundColor: "#c0392b",
+                  backgroundColor: "#800020",
                   justifyContent: "center",
                   alignItems: "center",
                   width: 64,
@@ -202,7 +213,7 @@ function TabProfile(props: any) {
 
       {tab === "vendor" && (
         <>
-          {!!packageDetail ? (
+          {packageDetail?.id ? (
             <View style={[styles.container, {}]}>
               <View
                 style={{
@@ -222,26 +233,31 @@ function TabProfile(props: any) {
                   Edit
                 </Text>
               </View>
-              <View
-                style={{
+              <ScrollView
+                contentContainerStyle={{
                   display: "flex",
                   flexDirection: "row",
-                  width: "100%",
-                  marginVertical: 12,
+                  marginBottom: 8,
                 }}
+                horizontal
               >
-                <Image
-                  source={{
-                    uri: `https://api.mooxevents.com/api/image/mooxapps/${packageDetail?.img_package}`,
-                  }}
-                  style={{
-                    width: 240,
-                    height: 60,
-                    borderRadius: 4,
-                    marginRight: 8,
-                  }}
-                />
-              </View>
+                {packageDetailImages.map((val, index) => (
+                  <View style={{ position: "relative" }}>
+                    <Image
+                      key={index}
+                      source={{
+                        uri: `https://api.mooxevents.com/api/image/mooxapps/${val.img_package}`,
+                      }}
+                      style={{
+                        width: 120,
+                        height: 120,
+                        borderRadius: 4,
+                        marginLeft: 4,
+                      }}
+                    />
+                  </View>
+                ))}
+              </ScrollView>
               <Text style={{ textTransform: "capitalize", fontSize: 16 }}>
                 {packageDetail?.name_item}
               </Text>
@@ -253,13 +269,13 @@ function TabProfile(props: any) {
                   marginVertical: 4,
                 }}
               >
-                <Ionicons size={18} name="cash-outline" color="#c0392b" />
-                <Text style={{ color: "#c0392b" }}>{packageDetail?.price}</Text>
+                <Ionicons size={18} name="cash-outline" color="#800020" />
+                <Text style={{ color: "#800020" }}>{packageDetail?.price}</Text>
               </View>
 
               <View style={{ paddingVertical: 8 }}>
                 <View>
-                  <Text style={{ color: "#680101", fontWeight: "bold" }}>
+                  <Text style={{ color: "#800020", fontWeight: "bold" }}>
                     Description
                   </Text>
                   <Text style={{ marginVertical: 8 }}>
@@ -267,7 +283,7 @@ function TabProfile(props: any) {
                   </Text>
                 </View>
                 <View>
-                  <Text style={{ color: "#680101", fontWeight: "bold" }}>
+                  <Text style={{ color: "#800020", fontWeight: "bold" }}>
                     Address
                   </Text>
                   <Text>{packageDetail?.address}</Text>
@@ -295,7 +311,7 @@ function TabProfile(props: any) {
               <Pressable
                 onPress={() => navigation.navigate("PackageForm")}
                 style={{
-                  backgroundColor: "#c0392b",
+                  backgroundColor: "#800020",
                   justifyContent: "center",
                   alignItems: "center",
                   borderRadius: 6,

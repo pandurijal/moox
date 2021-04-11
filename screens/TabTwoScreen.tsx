@@ -54,7 +54,7 @@ export default function TabTwoScreen(props: any) {
             <Text
               style={{
                 textTransform: "capitalize",
-                color: tab === val ? "#680101" : "gray",
+                color: tab === val ? "#800020" : "gray",
                 fontWeight: tab === val ? "bold" : "regular",
               }}
             >
@@ -65,7 +65,7 @@ export default function TabTwoScreen(props: any) {
       </View>
       {loading && (
         <View style={{ marginVertical: 30 }}>
-          <ActivityIndicator size="large" color="#680101" />
+          <ActivityIndicator size="large" color="#800020" />
         </View>
       )}
       {!loading && (
@@ -95,7 +95,7 @@ export default function TabTwoScreen(props: any) {
                 </View>
                 <Text
                   style={{
-                    color: "#c0392b",
+                    color: "#800020",
                   }}
                 >
                   Details
@@ -126,7 +126,7 @@ export default function TabTwoScreen(props: any) {
               </Text>
               <TouchableOpacity
                 style={{
-                  backgroundColor: "#c0392b",
+                  backgroundColor: "#800020",
                   paddingVertical: 8,
                   paddingHorizontal: 20,
                   borderRadius: 6,

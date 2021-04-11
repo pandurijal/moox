@@ -124,7 +124,7 @@ export default function DetailPackage(props: any) {
               }}
             >
               <Ionicons name="star" color="#f1c40f" />
-              <Text>{packageDetail?.rating_count}</Text>
+              <Text>{packageDetail?.rating_value}</Text>
             </View>
           </View>
           <View
@@ -139,9 +139,9 @@ export default function DetailPackage(props: any) {
                 alignItems: "center",
               }}
             >
-              <Ionicons size={18} name="cash-outline" color="#c0392b" />
+              <Ionicons size={18} name="cash-outline" color="#800020" />
               <Text
-                style={{ color: "#c0392b", marginLeft: 8, fontWeight: "bold" }}
+                style={{ color: "#800020", marginLeft: 8, fontWeight: "bold" }}
               >
                 {packageDetail?.price}
               </Text>
@@ -171,7 +171,7 @@ export default function DetailPackage(props: any) {
             ) : (
               <View
                 style={{
-                  backgroundColor: "#c0392b",
+                  backgroundColor: "#800020",
                   justifyContent: "center",
                   alignItems: "center",
                   width: 30,
@@ -287,7 +287,7 @@ export default function DetailPackage(props: any) {
         <View style={{ paddingVertical: 8 }}>
           <TouchableOpacity
             style={{
-              backgroundColor: "#c0392b",
+              backgroundColor: "#800020",
               padding: 12,
               borderRadius: 6,
               marginBottom: 6,
@@ -310,14 +310,14 @@ export default function DetailPackage(props: any) {
               padding: 12,
               borderRadius: 6,
               borderWidth: 1,
-              borderColor: "#c0392b",
+              borderColor: "#800020",
               marginBottom: 6,
             }}
             onPress={() => navigation.navigate("EventForm")}
           >
             <Text
               style={{
-                color: "#c0392b",
+                color: "#800020",
                 fontWeight: "bold",
                 textAlign: "center",
               }}
@@ -408,7 +408,7 @@ export default function DetailPackage(props: any) {
                       <TouchableOpacity
                         style={{
                           backgroundColor: !isSubmitting
-                            ? "#c0392b"
+                            ? "#800020"
                             : "#bdc3c7",
                           padding: 12,
                           borderRadius: 6,
@@ -448,7 +448,7 @@ export default function DetailPackage(props: any) {
               </Text>
               <TouchableOpacity
                 style={{
-                  backgroundColor: !isSubmitting ? "#c0392b" : "#bdc3c7",
+                  backgroundColor: !isSubmitting ? "#800020" : "#bdc3c7",
                   paddingVertical: 8,
                   paddingHorizontal: 20,
                   borderRadius: 6,

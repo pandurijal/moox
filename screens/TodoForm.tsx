@@ -145,7 +145,7 @@ export default function TodoForm(props) {
       </Pressable>
       <Pressable
         style={{
-          backgroundColor: !isSubmitting ? "#c0392b" : "#bdc3c7",
+          backgroundColor: !isSubmitting ? "#800020" : "#bdc3c7",
           padding: 12,
           marginTop: 8,
           borderRadius: 6,

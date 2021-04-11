@@ -5,6 +5,7 @@ import {
   ActivityIndicator,
   Pressable,
   Image,
+  ScrollView,
 } from "react-native";
 import moment from "moment";
 import { getMyProfile, getMyBooking } from "./../services";
@@ -65,7 +66,7 @@ export default function TabBooking(props: any) {
         <Pressable onPress={() => navigation.navigate("ProfileUpdate")}>
           <View
             style={{
-              borderColor: "#680101",
+              borderColor: "#800020",
               borderWidth: 1,
               marginTop: 8,
               borderRadius: 6,
@@ -77,7 +78,7 @@ export default function TabBooking(props: any) {
               Please complete your profile{" "}
               <Text
                 style={{
-                  color: "#680101",
+                  color: "#800020",
                 }}
               >
                 here.
@@ -93,10 +94,10 @@ export default function TabBooking(props: any) {
           paddingHorizontal: 20,
         }}
       >
-        {["waiting", "approve", "done"].map((val, index) => (
+        {["waiting", "approve", "done", "cancel"].map((val, index) => (
           <TouchableOpacity
             style={{
-              borderColor: tab === val ? "#680101" : "gray",
+              borderColor: tab === val ? "#800020" : "gray",
               borderWidth: 1,
               paddingVertical: 4,
               paddingHorizontal: 12,
@@ -109,7 +110,7 @@ export default function TabBooking(props: any) {
             <Text
               style={{
                 textTransform: "capitalize",
-                color: tab === val ? "#680101" : "gray",
+                color: tab === val ? "#800020" : "gray",
                 fontWeight: "600",
               }}
             >
@@ -120,107 +121,111 @@ export default function TabBooking(props: any) {
       </View>
       {loading && (
         <View style={{ marginVertical: 30 }}>
-          <ActivityIndicator size="large" color="#680101" />
+          <ActivityIndicator size="large" color="#800020" />
         </View>
       )}
 
-      {bookingList?.length ? (
-        bookingList?.map((val) => (
-          <Pressable
-            onPress={() =>
-              navigation.navigate("BookingDetail", {
-                bookingId: val?.id_booking,
-              })
-            }
-            style={{
-              elevation: 5,
-              marginHorizontal: 20,
-              paddingHorizontal: 18,
-              paddingVertical: 18,
-              borderRadius: 6,
-              justifyContent: "center",
-            }}
-          >
-            <View style={{ flexDirection: "row", marginBottom: 6 }}>
-              {val?.user_avatar || val?.google_avatar ? (
-                <Image
-                  source={{
-                    uri: `https://api.mooxevents.com/api/image/mooxapps/${
-                      val?.user_avatar || val?.google_avatar
-                    }`,
-                  }}
-                  style={{
-                    width: 30,
-                    height: 30,
-                    borderRadius: 100,
-                    marginRight: 8,
-                  }}
-                />
-              ) : (
-                <View
-                  style={{
-                    backgroundColor: "#c0392b",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    width: 30,
-                    height: 30,
-                    borderRadius: 100,
-                    marginRight: 8,
-                  }}
-                >
-                  <Text style={{ color: "white", textTransform: "capitalize" }}>
-                    {val?.customer_name?.charAt(0)}
-                  </Text>
-                </View>
-              )}
-              <Text style={{ textTransform: "capitalize" }}>
-                {val?.customer_name}
-              </Text>
-            </View>
-            <View
+      <ScrollView>
+        {bookingList?.length ? (
+          bookingList?.map((val) => (
+            <Pressable
+              onPress={() =>
+                navigation.navigate("BookingDetail", {
+                  bookingId: val?.id_booking,
+                })
+              }
               style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
+                elevation: 5,
+                marginHorizontal: 20,
+                paddingHorizontal: 18,
+                paddingVertical: 18,
+                borderRadius: 6,
+                justifyContent: "center",
               }}
             >
-              <Text
+              <View style={{ flexDirection: "row", marginBottom: 6 }}>
+                {val?.user_avatar || val?.google_avatar ? (
+                  <Image
+                    source={{
+                      uri: `https://api.mooxevents.com/api/image/mooxapps/${
+                        val?.user_avatar || val?.google_avatar
+                      }`,
+                    }}
+                    style={{
+                      width: 30,
+                      height: 30,
+                      borderRadius: 100,
+                      marginRight: 8,
+                    }}
+                  />
+                ) : (
+                  <View
+                    style={{
+                      backgroundColor: "#800020",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      width: 30,
+                      height: 30,
+                      borderRadius: 100,
+                      marginRight: 8,
+                    }}
+                  >
+                    <Text
+                      style={{ color: "white", textTransform: "capitalize" }}
+                    >
+                      {val?.customer_name?.charAt(0)}
+                    </Text>
+                  </View>
+                )}
+                <Text style={{ textTransform: "capitalize" }}>
+                  {val?.customer_name}
+                </Text>
+              </View>
+              <View
                 style={{
-                  fontWeight: "500",
-                  fontSize: 16,
-                  textTransform: "capitalize",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
                 }}
               >
-                {val.event_name}
-              </Text>
-              <Text style={{ color: "gray" }}>
-                {moment(val.date).format("ll")}
-              </Text>
-            </View>
-            <View style={{ marginVertical: 12 }}>
-              <Text style={{ fontWeight: "bold" }}>Notes</Text>
-              <Text>{val?.note}</Text>
-            </View>
-            <View>
-              <Text
-                style={{
-                  textAlign: "center",
-                  fontWeight: "bold",
-                  color: "#680101",
-                }}
-              >
-                Details
-              </Text>
-            </View>
-          </Pressable>
-        ))
-      ) : (
-        <View style={styles.container}>
-          <Text style={{ fontSize: 24, fontWeight: "bold" }}>
-            You have no bookings
-          </Text>
-        </View>
-      )}
+                <Text
+                  style={{
+                    fontWeight: "500",
+                    fontSize: 16,
+                    textTransform: "capitalize",
+                  }}
+                >
+                  {val.event_name}
+                </Text>
+                <Text style={{ color: "gray" }}>
+                  {moment(val.date).format("ll")}
+                </Text>
+              </View>
+              <View style={{ marginVertical: 12 }}>
+                <Text style={{ fontWeight: "bold" }}>Notes</Text>
+                <Text>{val?.note}</Text>
+              </View>
+              <View>
+                <Text
+                  style={{
+                    textAlign: "center",
+                    fontWeight: "bold",
+                    color: "#800020",
+                  }}
+                >
+                  Details
+                </Text>
+              </View>
+            </Pressable>
+          ))
+        ) : (
+          <View style={styles.container}>
+            <Text style={{ fontSize: 24, fontWeight: "bold" }}>
+              You have no bookings
+            </Text>
+          </View>
+        )}
+      </ScrollView>
     </>
   );
 }

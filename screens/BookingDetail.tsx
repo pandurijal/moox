@@ -73,7 +73,7 @@ export default function BookingDetail(props: any) {
     <ScrollView>
       {loading && (
         <View style={{ marginVertical: 30 }}>
-          <ActivityIndicator size="large" color="#680101" />
+          <ActivityIndicator size="large" color="#800020" />
         </View>
       )}
       {!loading && (
@@ -103,7 +103,7 @@ export default function BookingDetail(props: any) {
               ) : (
                 <View
                   style={{
-                    backgroundColor: "#c0392b",
+                    backgroundColor: "#800020",
                     justifyContent: "center",
                     alignItems: "center",
                     width: 40,
@@ -158,7 +158,7 @@ export default function BookingDetail(props: any) {
                     alignItems: "center",
                   }}
                 >
-                  <Text style={{ color: "#680101" }}>Event Name</Text>
+                  <Text style={{ color: "#800020" }}>Event Name</Text>
                   <Text style={{ textTransform: "capitalize" }}>
                     {bookingDetail?.event_name}
                   </Text>
@@ -170,7 +170,7 @@ export default function BookingDetail(props: any) {
                     alignItems: "center",
                   }}
                 >
-                  <Text style={{ color: "#680101" }}>Event Date</Text>
+                  <Text style={{ color: "#800020" }}>Event Date</Text>
                   <Text>{moment(bookingDetail?.date).format("ll")}</Text>
                 </View>
                 <View
@@ -182,7 +182,7 @@ export default function BookingDetail(props: any) {
                     }
                   }
                 >
-                  <Text style={{ color: "#680101" }}>Event Description</Text>
+                  <Text style={{ color: "#800020" }}>Event Description</Text>
                   <Text style={{ marginVertical: 8 }}>
                     {bookingDetail?.description}
                   </Text>
@@ -204,7 +204,7 @@ export default function BookingDetail(props: any) {
             <View>
               <View>
                 <View style={{}}>
-                  <Text style={{ color: "#680101" }}>Notes</Text>
+                  <Text style={{ color: "#800020" }}>Notes</Text>
                   <Text style={{ marginVertical: 8 }}>
                     {bookingDetail?.note}
                   </Text>
@@ -226,7 +226,7 @@ export default function BookingDetail(props: any) {
             {bookingDetail?.status === "approve" && (
               <Pressable
                 style={{
-                  backgroundColor: "#c0392b",
+                  backgroundColor: "#800020",
                   padding: 12,
                   borderRadius: 6,
                   marginBottom: 6,
@@ -247,7 +247,7 @@ export default function BookingDetail(props: any) {
             {bookingDetail?.status === "waiting" && (
               <Pressable
                 style={{
-                  backgroundColor: "#c0392b",
+                  backgroundColor: "#800020",
                   padding: 12,
                   borderRadius: 6,
                   marginBottom: 6,
@@ -272,14 +272,14 @@ export default function BookingDetail(props: any) {
                   padding: 12,
                   borderRadius: 6,
                   borderWidth: 1,
-                  borderColor: "#c0392b",
+                  borderColor: "#800020",
                   marginBottom: 6,
                 }}
                 onPress={() => handleSubmit("approve")}
               >
                 <Text
                   style={{
-                    color: "#c0392b",
+                    color: "#800020",
                     fontWeight: "bold",
                     textAlign: "center",
                   }}

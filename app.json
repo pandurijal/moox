@@ -4,13 +4,13 @@
     "slug": "moox",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/icon-moox.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#680101"
+      "backgroundColor": "#800020"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -26,6 +26,7 @@
       },
       "config": {
         "googleSignIn": {
+          "certificateHash": "E0:16:10:71:39:6C:49:E9:B4:A0:65:CB:29:19:9A:60:E4:2F:AB:FD",
           "apiKey": "2ECC15507B437E14044D0C302CFB9CB32615B3A3A32197FF5819AC71E944F9D1"
         }
       },

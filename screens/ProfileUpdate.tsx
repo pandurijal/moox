@@ -139,7 +139,7 @@ export default function LandingPage(props: any) {
 
   return (
     <View style={styles.container}>
-      <Text style={{ fontSize: 18, fontWeight: "bold", color: "#680101" }}>
+      <Text style={{ fontSize: 18, fontWeight: "bold", color: "#800020" }}>
         Profile Update
       </Text>
       <Text style={{ marginVertical: 12 }}>
@@ -161,7 +161,7 @@ export default function LandingPage(props: any) {
       >
         {uploading && (
           <View style={{ marginVertical: 30 }}>
-            <ActivityIndicator size="small" color="#680101" />
+            <ActivityIndicator size="small" color="#800020" />
           </View>
         )}
         {!uploading && (
@@ -235,6 +235,7 @@ export default function LandingPage(props: any) {
                 onBlur={handleBlur("phone")}
                 value={values.phone}
                 style={styles.textInput}
+                keyboardType="numeric"
               />
               {touched.phone && errors.phone && (
                 <Text style={{ color: "red", fontSize: 12 }}>
@@ -245,7 +246,7 @@ export default function LandingPage(props: any) {
             <View style={styles.inputWrapper}>
               <Pressable
                 style={{
-                  backgroundColor: !loading ? "#c0392b" : "#bdc3c7",
+                  backgroundColor: !loading ? "#800020" : "#bdc3c7",
                   padding: 12,
                   marginTop: 8,
                   borderRadius: 6,
