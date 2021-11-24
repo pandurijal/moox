@@ -1,5 +1,11 @@
 import React, { useState } from "react";
-import { Button, StyleSheet, TouchableOpacity, TextInput } from "react-native";
+import {
+  Button,
+  StyleSheet,
+  TouchableOpacity,
+  TextInput,
+  ToastAndroid,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { userResetPassword } from "./../services";
 import { Formik } from "formik";
@@ -32,10 +38,12 @@ export default function ForgotPassword(props: any) {
       };
       const res = await userResetPassword(payload);
       if (res) {
+        ToastAndroid.show("Successfully reset password.", ToastAndroid.SHORT);
         navigation.navigate("Login");
       }
     } catch (error) {
       const errMessage = "Reset password failed. Unknown error occured.";
+      ToastAndroid.show(errMessage, ToastAndroid.SHORT);
       setResMessage(errMessage);
       console.error(error);
     } finally {

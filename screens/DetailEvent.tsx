@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { isEmpty } from "lodash";
 import moment from "moment";
 import Modal from "react-native-modal";
 import { Ionicons } from "@expo/vector-icons";
@@ -9,11 +10,13 @@ import {
   StyleSheet,
   TouchableOpacity,
   TextInput,
+  ToastAndroid,
 } from "react-native";
 import {
   getMyEventDetail,
   getMyEventVendor,
   postVendorReview,
+  updateMyEventCancel,
 } from "./../services";
 
 import { Text, View } from "../components/Themed";
@@ -41,6 +44,7 @@ const vendorList = [
 
 export default function DetailEvent(props: any) {
   const { navigation, route } = props;
+  const { eventId, eventStatus } = route.params;
   const isFocused = useIsFocused();
   const [eventDetail, setEventDetail] = useState({});
   const [eventVendor, setEventVendor] = useState([]);
@@ -55,16 +59,23 @@ export default function DetailEvent(props: any) {
 
   useEffect(() => {
     const _getMyEvent = async () => {
-      const { eventId } = route.params;
-      console.log({ eventId });
       try {
         const res = await getMyEventDetail(eventId);
         console.log("event detail", res);
         setEventDetail(res?.data);
       } catch (error) {
+        ToastAndroid.show("Error on get event detail.", ToastAndroid.SHORT);
         console.error("event detail", error);
       }
     };
+
+    if (eventStatus === "done") {
+      setTab("done");
+    }
+
+    if (eventStatus === "review") {
+      setTab("review");
+    }
 
     _getMyEvent();
   }, [isFocused]);
@@ -81,6 +92,7 @@ export default function DetailEvent(props: any) {
         console.log("event vendor", res);
         setEventVendor(res?.data);
       } catch (error) {
+        ToastAndroid.show("Error on get vendor list.", ToastAndroid.SHORT);
         console.error("event vendor", error);
       }
     };
@@ -105,13 +117,35 @@ export default function DetailEvent(props: any) {
       };
       const res = await postVendorReview(payload);
       if (res) {
+        ToastAndroid.show(
+          "Successfully submitted a review.",
+          ToastAndroid.SHORT
+        );
         setModalReview(false);
         setTab("review");
       }
       console.log({ payload });
     } catch (error) {
+      ToastAndroid.show("Error on submit review.", ToastAndroid.SHORT);
       console.log({ error, res: error.response });
       console.error("submit review", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleCancelEvent = async () => {
+    try {
+      setIsSubmitting(true);
+      const res = await updateMyEventCancel(eventId);
+      if (res) {
+        ToastAndroid.show("Successfully cancel event.", ToastAndroid.SHORT);
+        navigation.goBack();
+      }
+    } catch (error) {
+      ToastAndroid.show("Error on cancel event.", ToastAndroid.SHORT);
+      console.log({ error, res: error.response });
+      console.error("cancel event", error);
     } finally {
       setIsSubmitting(false);
     }
@@ -199,6 +233,17 @@ export default function DetailEvent(props: any) {
             </View>
           </View>
         ))}
+        {isEmpty(eventVendor) && (
+          <View
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Text>No Vendor</Text>
+          </View>
+        )}
       </View>
       <View style={{ marginVertical: 12 }}>
         <Text>Event Details</Text>
@@ -240,32 +285,35 @@ export default function DetailEvent(props: any) {
             Edit
           </Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          style={{
-            backgroundColor: "#fff",
-            padding: 12,
-            borderRadius: 6,
-            borderWidth: 1,
-            borderColor: "#800020",
-            marginBottom: 6,
-          }}
-          onPress={() => navigation.navigate("EventForm")}
-        >
-          <Text
+        {eventStatus === "waiting" && (
+          <TouchableOpacity
+            disabled={isSubmitting}
             style={{
-              color: "#800020",
-              fontWeight: "bold",
-              textAlign: "center",
+              backgroundColor: "#fff",
+              padding: 12,
+              borderRadius: 6,
+              borderWidth: 1,
+              borderColor: "#800020",
+              marginBottom: 6,
             }}
+            onPress={handleCancelEvent}
           >
-            Cancel Event
-          </Text>
-        </TouchableOpacity>
+            <Text
+              style={{
+                color: "#800020",
+                fontWeight: "bold",
+                textAlign: "center",
+              }}
+            >
+              Cancel Event
+            </Text>
+          </TouchableOpacity>
+        )}
       </View>
       <Modal
         isVisible={modalReview}
-        // onBackButtonPress={() => setModalBooking(false)}
-        // onBackdropPress={() => setModalBooking(false)}
+        onBackButtonPress={() => setModalReview(false)}
+        onBackdropPress={() => setModalReview(false)}
         style={{
           height: "50%",
           // backgroundColor: "blue",

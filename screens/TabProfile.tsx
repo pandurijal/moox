@@ -121,19 +121,6 @@ function TabProfile(props: any) {
         }}
       >
         <Pressable
-          onPress={() => setTab("account")}
-          style={{ paddingVertical: 12 }}
-        >
-          <Text
-            style={{
-              color: tab === "account" ? "white" : "gray",
-              fontWeight: "bold",
-            }}
-          >
-            Account
-          </Text>
-        </Pressable>
-        <Pressable
           onPress={() => setTab("vendor")}
           style={{ paddingVertical: 12 }}
         >
@@ -144,6 +131,19 @@ function TabProfile(props: any) {
             }}
           >
             Vendor
+          </Text>
+        </Pressable>
+        <Pressable
+          onPress={() => setTab("account")}
+          style={{ paddingVertical: 12 }}
+        >
+          <Text
+            style={{
+              color: tab === "account" ? "white" : "gray",
+              fontWeight: "bold",
+            }}
+          >
+            Account
           </Text>
         </Pressable>
       </View>
@@ -160,7 +160,7 @@ function TabProfile(props: any) {
             {myProfile?.user_avatar || myProfile?.google_avatar ? (
               <Image
                 source={{
-                  uri: `https://api.mooxevents.com/api/image/mooxapps/${
+                  uri: `https://api.mooxevents.in/api/image/mooxapps/${
                     myProfile?.user_avatar || myProfile?.google_avatar
                   }`,
                 }}
@@ -246,7 +246,7 @@ function TabProfile(props: any) {
                     <Image
                       key={index}
                       source={{
-                        uri: `https://api.mooxevents.com/api/image/mooxapps/${val.img_package}`,
+                        uri: `https://api.mooxevents.in/api/image/mooxapps/${val.img_package}`,
                       }}
                       style={{
                         width: 120,

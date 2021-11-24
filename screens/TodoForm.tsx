@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Pressable, StyleSheet, TextInput } from "react-native";
+import { Pressable, StyleSheet, TextInput, ToastAndroid } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { getTodoDetail, postTodo } from "./../services";
 
@@ -38,6 +38,7 @@ export default function TodoForm(props) {
         setTodoDetail(res?.data?.[0]);
         setTodoList(res?.todo_list);
       } catch (error) {
+        ToastAndroid.show("Error on get to do detail.", ToastAndroid.SHORT);
         console.log({ error, res: error.response });
       } finally {
         setLoading(false);
@@ -75,17 +76,20 @@ export default function TodoForm(props) {
       };
       const res = await postTodo(payload);
       if (res) {
+        ToastAndroid.show(
+          "Successfully create to do detail.",
+          ToastAndroid.SHORT
+        );
         navigation.goBack();
       }
       console.log({ res });
     } catch (error) {
+      ToastAndroid.show("Error on create profile detail.", ToastAndroid.SHORT);
       console.log(error);
     } finally {
       setIsSubmitting(false);
     }
   };
-
-  console.log({ todoDetail, todoList });
 
   return (
     <View style={styles.container}>

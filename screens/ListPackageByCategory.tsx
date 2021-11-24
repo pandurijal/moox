@@ -7,6 +7,7 @@ import {
   ScrollView,
   ActivityIndicator,
   Pressable,
+  ToastAndroid,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { getPackageByVendor } from "./../services";
@@ -34,6 +35,10 @@ export default function ListPackageByCategory(props: any) {
         setPackageList(res?.data);
         console.log({ res });
       } catch (error) {
+        ToastAndroid.show(
+          "Error on get package list by vendor.",
+          ToastAndroid.SHORT
+        );
         console.log({ error, res: error.response });
         console.error("search detail", typeVendorId, error);
       } finally {
@@ -68,7 +73,7 @@ export default function ListPackageByCategory(props: any) {
               {item?.user_avatar ? (
                 <Image
                   source={{
-                    uri: `https://api.mooxevents.com/api/image/mooxapps/${item.user_avatar}`,
+                    uri: `https://api.mooxevents.in/api/image/mooxapps/${item.user_avatar}`,
                   }}
                   style={{
                     width: 30,
@@ -101,7 +106,7 @@ export default function ListPackageByCategory(props: any) {
             </View>
             <Image
               source={{
-                uri: `https://api.mooxevents.com/api/image/mooxapps/${item.img_package}`,
+                uri: `https://api.mooxevents.in/api/image/mooxapps/${item.img_package}`,
               }}
               style={{ width: "100%", height: 90 }}
             />

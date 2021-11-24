@@ -6,6 +6,7 @@ import {
   ScrollView,
   Image,
   ActivityIndicator,
+  ToastAndroid,
 } from "react-native";
 import moment from "moment";
 import { getNotifList } from "./../services";
@@ -20,6 +21,7 @@ export default function Notifications() {
       const res = await getNotifList();
       setNotifList(res?.data);
     } catch (error) {
+      ToastAndroid.show("Error on get notification list.", ToastAndroid.SHORT);
       console.log({ error, res: error.response });
     } finally {
       setLoading(false);

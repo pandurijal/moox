@@ -9,6 +9,7 @@ import {
 } from "./../types";
 import { userLogin, userGoogleAuth } from "./../../services";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as GoogleSignIn from "expo-google-sign-in";
 
 export const userLoginAction = (payload: any) => async (dispatch: any) => {
   dispatch({ type: USER_LOGIN_REQUEST });
@@ -53,6 +54,7 @@ export const userGoogleAuthAction = (payload: any) => async (dispatch: any) => {
   }
 };
 
-export const userLogoutAction = () => (dispatch: any) => {
+export const userLogoutAction = () => async (dispatch: any) => {
+  await GoogleSignIn.signOutAsync();
   dispatch({ type: USER_LOGOUT });
 };

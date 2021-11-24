@@ -57,9 +57,8 @@ function RegisterCustomer(props: any) {
   async function registerForPushNotificationsAsync() {
     let token;
     if (Constants.isDevice) {
-      const {
-        status: existingStatus,
-      } = await Notifications.getPermissionsAsync();
+      const { status: existingStatus } =
+        await Notifications.getPermissionsAsync();
       let finalStatus = existingStatus;
       if (existingStatus !== "granted") {
         const { status } = await Notifications.requestPermissionsAsync();
@@ -104,6 +103,7 @@ function RegisterCustomer(props: any) {
         user_role: "customer",
         notify: expoToken,
       };
+      console.log({ payload });
       const res = await userRegister(payload);
       if (res) {
         navigation.navigate("Login");
@@ -376,7 +376,7 @@ function RegisterCustomer(props: any) {
 const styles = StyleSheet.create({
   container: {
     padding: 20,
-    backgroundColor: "white",
+    backgroundColor: "#fff",
     // flexGrow: 1,
   },
   title: {

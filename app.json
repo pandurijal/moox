@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "moox",
+    "name": "Moox Events",
     "slug": "moox",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -8,7 +8,7 @@
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./assets/images/splash.png",
+      "image": "./assets/images/icon-moox.png",
       "resizeMode": "contain",
       "backgroundColor": "#800020"
     },

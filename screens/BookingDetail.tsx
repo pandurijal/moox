@@ -8,6 +8,7 @@ import {
   ScrollView,
   Pressable,
   ActivityIndicator,
+  ToastAndroid,
 } from "react-native";
 import Modal from "react-native-modal";
 import { Ionicons } from "@expo/vector-icons";
@@ -39,6 +40,7 @@ export default function BookingDetail(props: any) {
         const res = await getBookingDetail(bookingId);
         setBookingDetail(res?.data?.[0]);
       } catch (error) {
+        ToastAndroid.show("Error on get booking detail.", ToastAndroid.SHORT);
         console.error(error, "package detail");
       } finally {
         setLoading(false);
@@ -58,9 +60,14 @@ export default function BookingDetail(props: any) {
       const res = await updateBookingDetail(bookingId, payload);
       if (res) {
         console.log({ res });
+        ToastAndroid.show(
+          "Successfully update booking detail",
+          ToastAndroid.SHORT
+        );
         navigation.goBack();
       }
     } catch (error) {
+      ToastAndroid.show("Error on update booking detail.", ToastAndroid.SHORT);
       console.error(error, "update booking detail");
     } finally {
       setIsSubmitting(false);
@@ -89,7 +96,7 @@ export default function BookingDetail(props: any) {
               {bookingDetail?.user_avatar || bookingDetail?.google_avatar ? (
                 <Image
                   source={{
-                    uri: `https://api.mooxevents.com/api/image/mooxapps/${
+                    uri: `https://api.mooxevents.in/api/image/mooxapps/${
                       bookingDetail?.user_avatar || bookingDetail?.google_avatar
                     }`,
                   }}

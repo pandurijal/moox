@@ -1,5 +1,11 @@
 import React, { useState } from "react";
-import { Button, StyleSheet, TouchableOpacity, TextInput } from "react-native";
+import {
+  Button,
+  StyleSheet,
+  TouchableOpacity,
+  TextInput,
+  ToastAndroid,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { userChangePassword } from "./../services";
 import { Formik } from "formik";
@@ -33,10 +39,15 @@ export default function ChangePassword(props: any) {
       };
       const res = await userChangePassword(payload);
       if (res) {
+        ToastAndroid.show(
+          "Successfully change a password.",
+          ToastAndroid.SHORT
+        );
         navigation.goBack();
       }
     } catch (error) {
       const errMessage = "Change password failed. Unknown error occured.";
+      ToastAndroid.show(errMessage, ToastAndroid.SHORT);
       setResMessage(errMessage);
       console.error(error);
     } finally {
@@ -77,6 +88,7 @@ export default function ChangePassword(props: any) {
                 onBlur={handleBlur("password")}
                 value={values.password}
                 style={styles.textInput}
+                secureTextEntry
               />
               {touched.password && errors.password && (
                 <Text style={{ color: "red", fontSize: 12 }}>
@@ -92,6 +104,7 @@ export default function ChangePassword(props: any) {
                 onBlur={handleBlur("password_repeat")}
                 value={values.password_repeat}
                 style={styles.textInput}
+                secureTextEntry
               />
               {touched.password_repeat && errors.password_repeat && (
                 <Text style={{ color: "red", fontSize: 12 }}>

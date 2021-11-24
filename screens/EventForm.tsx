@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   TextInput,
   Pressable,
+  ToastAndroid,
 } from "react-native";
 import { Formik } from "formik";
 import { postEvent, updateEvent, getMyEventDetail } from "../services";
@@ -30,6 +31,7 @@ export default function EventForm(props: any) {
         console.log("event detail", res);
         setEventDetail(res?.data);
       } catch (error) {
+        ToastAndroid.show("Error on get event detail.", ToastAndroid.SHORT);
         console.error("event detail", error);
       }
     };
@@ -62,14 +64,20 @@ export default function EventForm(props: any) {
         const res = await updateEvent(eventDetail?.id, payload);
         if (res) {
           navigation.navigate("DetailEvent", { eventId: eventDetail?.id });
+          ToastAndroid.show("Event successfully created.", ToastAndroid.SHORT);
         }
       } else {
         const res = await postEvent(payload);
         if (res) {
           navigation.navigate("TabTwoScreen");
+          ToastAndroid.show("Event successfully created.", ToastAndroid.SHORT);
         }
       }
     } catch (error) {
+      ToastAndroid.show(
+        "Unknown error occured. Please try again.",
+        ToastAndroid.SHORT
+      );
       console.log({ error, res: error.response });
       console.error(error);
     }

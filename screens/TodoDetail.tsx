@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, ActivityIndicator, Pressable } from "react-native";
+import {
+  StyleSheet,
+  ActivityIndicator,
+  Pressable,
+  ToastAndroid,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { getTodoDetail, updateTodo, deleteTodoDetail } from "./../services";
 
@@ -22,6 +27,7 @@ export default function TodoDetail(props) {
       setTodoDetail(res?.data?.[0]);
       setTodoList(res?.todo_list);
     } catch (error) {
+      ToastAndroid.show("Error on get todo detail.", ToastAndroid.SHORT);
       console.log({ error, res: error.response });
     } finally {
       setLoading(false);
@@ -40,8 +46,13 @@ export default function TodoDetail(props) {
         status,
       };
       const res = await updateTodo(id, payload);
+      ToastAndroid.show(
+        "Successfully updated to do detail.",
+        ToastAndroid.SHORT
+      );
       await _getMyTodoDetail();
     } catch (error) {
+      ToastAndroid.show("Error on update to do detail.", ToastAndroid.SHORT);
       console.log({ error, res: error.response });
     } finally {
       setIsTicking(false);
@@ -53,16 +64,19 @@ export default function TodoDetail(props) {
       setLoading(true);
       const res = await deleteTodoDetail(todoId);
       if (res) {
+        ToastAndroid.show(
+          "Successfully delete to do detail.",
+          ToastAndroid.SHORT
+        );
         navigation.goBack();
       }
     } catch (error) {
+      ToastAndroid.show("Error on delete to do detail.", ToastAndroid.SHORT);
       console.log({ error, res: error.response });
     } finally {
       setLoading(false);
     }
   };
-
-  console.log({ todoDetail, todoList });
 
   return (
     <View style={styles.container}>

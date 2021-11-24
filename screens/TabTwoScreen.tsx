@@ -7,6 +7,7 @@ import {
   Image,
   Pressable,
   ActivityIndicator,
+  ToastAndroid,
 } from "react-native";
 import { getMyEvent } from "./../services";
 import { useIsFocused } from "@react-navigation/native";
@@ -31,6 +32,7 @@ export default function TabTwoScreen(props: any) {
         console.log("event list", res);
         setEventList(res?.data);
       } catch (error) {
+        ToastAndroid.show("Error on get event list.", ToastAndroid.SHORT);
         console.error("event list", error);
       } finally {
         setLoading(false);
@@ -74,7 +76,10 @@ export default function TabTwoScreen(props: any) {
             eventList.map((val: any) => (
               <TouchableOpacity
                 onPress={() =>
-                  navigation.navigate("DetailEvent", { eventId: val.id })
+                  navigation.navigate("DetailEvent", {
+                    eventId: val.id,
+                    eventStatus: val.status,
+                  })
                 }
                 style={{
                   flexDirection: "row",
@@ -108,7 +113,7 @@ export default function TabTwoScreen(props: any) {
                 flex: 1,
                 alignItems: "center",
                 justifyContent: "center",
-                backgroundColor: "white",
+                backgroundColor: "#fff",
               }}
             >
               <Image
@@ -124,26 +129,28 @@ export default function TabTwoScreen(props: any) {
               >
                 You have no events
               </Text>
-              <TouchableOpacity
-                style={{
-                  backgroundColor: "#800020",
-                  paddingVertical: 8,
-                  paddingHorizontal: 20,
-                  borderRadius: 6,
-                  marginTop: 18,
-                }}
-                onPress={() => navigation.navigate("EventForm")}
-              >
-                <Text
+              {tab !== "cancel" && (
+                <TouchableOpacity
                   style={{
-                    color: "white",
-                    fontWeight: "bold",
-                    textAlign: "center",
+                    backgroundColor: "#800020",
+                    paddingVertical: 8,
+                    paddingHorizontal: 20,
+                    borderRadius: 6,
+                    marginTop: 18,
                   }}
+                  onPress={() => navigation.navigate("EventForm")}
                 >
-                  Create Event
-                </Text>
-              </TouchableOpacity>
+                  <Text
+                    style={{
+                      color: "white",
+                      fontWeight: "bold",
+                      textAlign: "center",
+                    }}
+                  >
+                    Create Event
+                  </Text>
+                </TouchableOpacity>
+              )}
             </View>
           )}
         </>

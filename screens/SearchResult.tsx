@@ -7,6 +7,7 @@ import {
   ScrollView,
   ActivityIndicator,
   Pressable,
+  ToastAndroid,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { getPackageSearch } from "./../services";
@@ -72,6 +73,7 @@ export default function SearchResult(props: any) {
         setSearchResult(res?.data);
         console.log({ payload, res });
       } catch (error) {
+        ToastAndroid.show("Error on get search result.", ToastAndroid.SHORT);
         console.log({ error, res: error.response });
         console.error("search detail", error);
       } finally {
@@ -108,6 +110,7 @@ export default function SearchResult(props: any) {
         >
           <Ionicons size={18} name="search" color="#bdc3c7" />
           <TextInput
+            autoFocus
             placeholder="Search"
             style={{ padding: 2 }}
             value={searchText}
@@ -137,7 +140,7 @@ export default function SearchResult(props: any) {
               {item?.user_avatar ? (
                 <Image
                   source={{
-                    uri: `https://api.mooxevents.com/api/image/mooxapps/${item.user_avatar}`,
+                    uri: `https://api.mooxevents.in/api/image/mooxapps/${item.user_avatar}`,
                   }}
                   style={{
                     width: 30,
@@ -170,7 +173,7 @@ export default function SearchResult(props: any) {
             </View>
             <Image
               source={{
-                uri: `https://api.mooxevents.com/api/image/mooxapps/${item.img_package}`,
+                uri: `https://api.mooxevents.in/api/image/mooxapps/${item.img_package}`,
               }}
               style={{ width: "100%", height: 90 }}
             />

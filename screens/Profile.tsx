@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { connect } from "react-redux";
-import { StyleSheet, TouchableOpacity } from "react-native";
+import { StyleSheet, TouchableOpacity, ToastAndroid } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { userLogoutAction } from "./../store/actions/userAction";
 
@@ -43,6 +43,7 @@ function Profile(props: any) {
       // console.log("logout", userData);
       // navigation.navigate("Root");
     } catch (error) {
+      ToastAndroid.show("Error on logout.", ToastAndroid.SHORT);
       console.error(error);
     }
   };

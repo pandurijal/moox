@@ -10,6 +10,7 @@ import {
   ScrollView,
   Pressable,
   ActivityIndicator,
+  ToastAndroid,
 } from "react-native";
 import { Formik } from "formik";
 import mime from "mime";
@@ -71,6 +72,7 @@ export default function EventForm(props: any) {
         city: { name: res?.data?.city_name },
       });
     } catch (error) {
+      ToastAndroid.show("Error on get package detail.", ToastAndroid.SHORT);
       console.error(error, "package detail");
     } finally {
       setLoading(false);
@@ -89,6 +91,7 @@ export default function EventForm(props: any) {
         const res = await getStateList();
         setListState(res?.data);
       } catch (error) {
+        ToastAndroid.show("Error on get state list.", ToastAndroid.SHORT);
         console.error("state list", error);
       }
     };
@@ -109,11 +112,14 @@ export default function EventForm(props: any) {
         const res = await getCityList(selectedState);
         setListCity(res?.data);
       } catch (error) {
+        ToastAndroid.show("Error on get city list.", ToastAndroid.SHORT);
         console.error("city list", error);
       }
     };
 
-    _fetchCityList();
+    if (selectedState) {
+      _fetchCityList();
+    }
   }, [selectedState]);
 
   useEffect(() => {
@@ -159,6 +165,7 @@ export default function EventForm(props: any) {
       });
       const res = await updatePackageAddImage(formdata);
       if (res) {
+        ToastAndroid.show("Successfully upload images.", ToastAndroid.SHORT);
         _getPackageDetail();
       }
       console.log({ res });
@@ -169,6 +176,7 @@ export default function EventForm(props: any) {
       } else {
         msg = "Unknown error occured. Please try again";
       }
+      ToastAndroid.show(msg, ToastAndroid.SHORT);
       setResMessage(msg);
       console.error(error);
     }
@@ -185,9 +193,11 @@ export default function EventForm(props: any) {
       setSubmitting(true);
       const res = await updatePackageDeleteImage(imageId);
       if (res) {
+        ToastAndroid.show("Successfully delete an image.", ToastAndroid.SHORT);
         _getPackageDetail();
       }
     } catch (error) {
+      ToastAndroid.show("Error on delete an image.", ToastAndroid.SHORT);
       console.log({ error, res: error.response });
       console.error(error);
     } finally {
@@ -230,16 +240,19 @@ export default function EventForm(props: any) {
       console.log({ formdata });
       const res = await postPackage(formdata);
       if (res) {
+        ToastAndroid.show("Successfully create a package.", ToastAndroid.SHORT);
         navigation.goBack();
       }
       console.log({ res });
     } catch (error) {
+      console.log({ error: error?.response });
       let msg = "";
       if (error?.response?.status === 413) {
         msg = "Image file is too big. Please use another image.";
       } else {
         msg = "Unknown error occured. Please try again";
       }
+      ToastAndroid.show(msg, ToastAndroid.SHORT);
       setResMessage(msg);
       console.error(error);
     } finally {
@@ -260,9 +273,11 @@ export default function EventForm(props: any) {
       console.log({ payload });
       const res = await updatePackage(packageDetail?.id, payload);
       if (res) {
+        ToastAndroid.show("Successfully update a package.", ToastAndroid.SHORT);
         navigation.goBack();
       }
     } catch (error) {
+      ToastAndroid.show("Error on update a package.", ToastAndroid.SHORT);
       console.log({ error, res: error.response });
       console.error(error);
     } finally {
@@ -292,7 +307,7 @@ export default function EventForm(props: any) {
                   <Image
                     key={index}
                     source={{
-                      uri: `https://api.mooxevents.com/api/image/mooxapps/${val.img_package}`,
+                      uri: `https://api.mooxevents.in/api/image/mooxapps/${val.img_package}`,
                     }}
                     style={{
                       width: 120,
@@ -303,7 +318,7 @@ export default function EventForm(props: any) {
                   />
                   <Pressable
                     style={{
-                      backgroundColor: "white",
+                      backgroundColor: "#fff",
                       position: "absolute",
                       top: 0,
                       right: 0,
@@ -363,7 +378,7 @@ export default function EventForm(props: any) {
                   />
                   <Pressable
                     style={{
-                      backgroundColor: "white",
+                      backgroundColor: "#fff",
                       position: "absolute",
                       top: 0,
                       right: 0,
@@ -430,7 +445,7 @@ export default function EventForm(props: any) {
                   />
                 </View>
                 <View style={styles.inputWrapper}>
-                  <Text>Package Price</Text>
+                  <Text>Package Price (INR)</Text>
                   <TextInput
                     autoCapitalize="none"
                     onChangeText={handleChange("price")}

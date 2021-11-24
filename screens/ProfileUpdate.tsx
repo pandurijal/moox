@@ -6,6 +6,7 @@ import {
   Pressable,
   Image,
   ActivityIndicator,
+  ToastAndroid,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { Ionicons } from "@expo/vector-icons";
@@ -48,6 +49,7 @@ export default function LandingPage(props: any) {
         setMyProfile(res?.status);
       }
     } catch (error) {
+      ToastAndroid.show("Error on get profile detail.", ToastAndroid.SHORT);
       console.log({ error, res: error.response });
     } finally {
       setLoading(false);
@@ -61,6 +63,7 @@ export default function LandingPage(props: any) {
       console.log("vendor type", res);
       setVendorTypeList(res?.data);
     } catch (error) {
+      ToastAndroid.show("Error on get vendor type list.", ToastAndroid.SHORT);
       console.log({ error, res: error.response });
     } finally {
       setLoading(false);
@@ -85,11 +88,16 @@ export default function LandingPage(props: any) {
       console.log({ formdata });
       const res = await updateProfilePhoto(formdata);
       if (res) {
+        ToastAndroid.show(
+          "Successfully update profile photo.",
+          ToastAndroid.SHORT
+        );
         _getMyProfile();
         // navigation.navigate("TabTwoScreen");
       }
       console.log({ res });
     } catch (error) {
+      ToastAndroid.show("Error on update profile photo.", ToastAndroid.SHORT);
       console.log({ error, res: error.response });
       console.error(error);
     } finally {
@@ -113,10 +121,12 @@ export default function LandingPage(props: any) {
       const res = await updateProfile(payload);
       console.log({ res });
       if (res) {
+        ToastAndroid.show("Successfully update profile.", ToastAndroid.SHORT);
         navigation.goBack();
       }
     } catch (error) {
       const errMessage = "Update profile failed. Unknown error occured.";
+      ToastAndroid.show(errMessage, ToastAndroid.SHORT);
       setResMessage(errMessage);
       console.error(error);
     } finally {
@@ -169,7 +179,7 @@ export default function LandingPage(props: any) {
             {myProfile?.user_avatar || myProfile?.google_avatar ? (
               <Image
                 source={{
-                  uri: `https://api.mooxevents.com/api/image/mooxapps/${
+                  uri: `https://api.mooxevents.in/api/image/mooxapps/${
                     myProfile?.user_avatar || myProfile?.google_avatar
                   }`,
                 }}

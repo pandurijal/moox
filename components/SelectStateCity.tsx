@@ -9,6 +9,7 @@ import {
   Pressable,
   View,
   Text,
+  ToastAndroid,
 } from "react-native";
 import Modal from "react-native-modal";
 import { getPackageSearch, getStateList, getCityList } from "./../services";
@@ -56,6 +57,7 @@ export function SelectStateCity(props: any) {
         const res = await getCityList(selectedState);
         setListCity(res?.data);
       } catch (error) {
+        ToastAndroid.show("Error on get city list.", ToastAndroid.SHORT);
         console.error("city list", selectedState, error);
       }
     };
@@ -99,7 +101,7 @@ export function SelectStateCity(props: any) {
             paddingTop: 12,
             paddingBottom: 18,
             borderRadius: 4,
-            backgroundColor: "white",
+            backgroundColor: "#fff",
           }}
         >
           <View style={styles.inputWrapper}>
@@ -146,7 +148,7 @@ export function SelectStateCity(props: any) {
                 <View
                   style={{
                     borderRadius: 4,
-                    backgroundColor: "white",
+                    backgroundColor: "#fff",
                     elevation: 2,
                   }}
                 >
@@ -212,7 +214,7 @@ export function SelectStateCity(props: any) {
                   <View
                     style={{
                       borderRadius: 4,
-                      backgroundColor: "white",
+                      backgroundColor: "#fff",
                       elevation: 2,
                     }}
                   >

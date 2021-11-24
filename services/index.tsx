@@ -2,8 +2,7 @@ import axios from "axios";
 import { connect } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const url = "https://api.mooxevents.com";
-// const url = "http://134.209.156.231:7000";
+const url = "https://api.mooxevents.in";
 
 // let token = "";
 
@@ -115,6 +114,10 @@ export const getMyEventDetail = (eventId: any) => {
 
 export const getMyEventVendor = (payload: any) => {
   return baseURL.post(`/events/detail`, payload).then((res) => res.data);
+};
+
+export const updateMyEventCancel = (eventId: any) => {
+  return baseURL.get(`/events/cancel/${eventId}`).then((res) => res.data);
 };
 
 export const getPackageList = () => {

@@ -11,6 +11,7 @@ import {
   Pressable,
   Text,
   View,
+  ToastAndroid,
 } from "react-native";
 import Modal from "react-native-modal";
 import { useIsFocused } from "@react-navigation/native";
@@ -103,18 +104,16 @@ function TabOneScreen(props: any) {
     );
 
     // This listener is fired whenever a notification is received while the app is foregrounded
-    notificationListener.current = Notifications.addNotificationReceivedListener(
-      (notification: any) => {
+    notificationListener.current =
+      Notifications.addNotificationReceivedListener((notification: any) => {
         setNotification(notification);
-      }
-    );
+      });
 
     // This listener is fired whenever a user taps on or interacts with a notification (works when app is foregrounded, backgrounded, or killed)
-    responseListener.current = Notifications.addNotificationResponseReceivedListener(
-      (response: any) => {
+    responseListener.current =
+      Notifications.addNotificationResponseReceivedListener((response: any) => {
         console.log(response);
-      }
-    );
+      });
 
     return () => {
       Notifications.removeNotificationSubscription(notificationListener);
@@ -125,9 +124,8 @@ function TabOneScreen(props: any) {
   async function registerForPushNotificationsAsync() {
     let token;
     if (Constants.isDevice) {
-      const {
-        status: existingStatus,
-      } = await Notifications.getPermissionsAsync();
+      const { status: existingStatus } =
+        await Notifications.getPermissionsAsync();
       let finalStatus = existingStatus;
       if (existingStatus !== "granted") {
         const { status } = await Notifications.requestPermissionsAsync();
@@ -209,6 +207,10 @@ function TabOneScreen(props: any) {
       setNotifCount(res?.count_notify);
       // setNotifCount(9);
     } catch (error) {
+      ToastAndroid.show(
+        "Error on get notification list count.",
+        ToastAndroid.SHORT
+      );
       console.log({ error, res: error.response });
     }
   };
@@ -219,6 +221,7 @@ function TabOneScreen(props: any) {
       console.log("profile", res);
       setMyProfile(res?.status);
     } catch (error) {
+      ToastAndroid.show("Error on get profile detail.", ToastAndroid.SHORT);
       console.log({ error, res: error.response });
     }
   };
@@ -230,6 +233,7 @@ function TabOneScreen(props: any) {
       console.log("top vendor", res);
       setTopVendor(res?.data);
     } catch (error) {
+      ToastAndroid.show("Error on get package list.", ToastAndroid.SHORT);
       console.log({ error, res: error.response });
     } finally {
       setLoading(false);
@@ -253,6 +257,7 @@ function TabOneScreen(props: any) {
         console.log({ res });
         setVendorTypeList(res?.data);
       } catch (error) {
+        ToastAndroid.show("Error on get vendor type list.", ToastAndroid.SHORT);
         console.log({ error, res: error.response });
       } finally {
         setLoading(false);
@@ -277,7 +282,7 @@ function TabOneScreen(props: any) {
       >
         <View
           style={{
-            backgroundColor: "white",
+            backgroundColor: "#fff",
             height: "100%",
             width: "70%",
             padding: 12,
@@ -306,7 +311,7 @@ function TabOneScreen(props: any) {
             {myProfile?.user_avatar || myProfile?.google_avatar ? (
               <Image
                 source={{
-                  uri: `https://api.mooxevents.com/api/image/mooxapps/${
+                  uri: `https://api.mooxevents.in/api/image/mooxapps/${
                     myProfile?.user_avatar || myProfile?.google_avatar
                   }`,
                 }}
@@ -420,7 +425,7 @@ function TabOneScreen(props: any) {
             {item?.user_avatar ? (
               <Image
                 source={{
-                  uri: `https://api.mooxevents.com/api/image/mooxapps/${item.user_avatar}`,
+                  uri: `https://api.mooxevents.in/api/image/mooxapps/${item.user_avatar}`,
                 }}
                 style={{
                   width: 30,
@@ -451,12 +456,28 @@ function TabOneScreen(props: any) {
               <Text>{item.vendorCategory}</Text>
             </View>
           </View>
-          <Image
-            source={{
-              uri: `https://api.mooxevents.com/api/image/mooxapps/${item.img_package}`,
-            }}
-            style={{ width: "100%", height: 90 }}
-          />
+          <View style={{ padding: 8 }}>
+            {item?.img_package ? (
+              <Image
+                source={{
+                  uri: `https://api.mooxevents.in/api/image/mooxapps/${item.img_package}`,
+                }}
+                style={{ width: "100%", height: 90 }}
+              />
+            ) : (
+              <View
+                style={{
+                  height: 90,
+                  backgroundColor: "grey",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Text style={{ color: "white" }}>No Image</Text>
+              </View>
+            )}
+          </View>
           <View style={{ padding: 8 }}>
             <Text>{item.name_item}</Text>
             <View
@@ -640,7 +661,7 @@ function TabOneScreen(props: any) {
                         >
                           <Image
                             source={{
-                              uri: `https://api.mooxevents.com/api/image/mooxapps/${val.img_vendor_type}`,
+                              uri: `https://api.mooxevents.in/api/image/mooxapps/${val.img_vendor_type}`,
                             }}
                             style={{
                               width: 36,

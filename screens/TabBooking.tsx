@@ -6,6 +6,7 @@ import {
   Pressable,
   Image,
   ScrollView,
+  ToastAndroid,
 } from "react-native";
 import moment from "moment";
 import { getMyProfile, getMyBooking } from "./../services";
@@ -30,6 +31,7 @@ export default function TabBooking(props: any) {
       console.log("profile", res);
       setMyProfile(res?.status);
     } catch (error) {
+      ToastAndroid.show("Error on get user profile.", ToastAndroid.SHORT);
       console.log({ error, res: error.response });
     } finally {
       setLoading(false);
@@ -51,6 +53,7 @@ export default function TabBooking(props: any) {
         console.log("booking list", res);
         setBookingList(res?.data);
       } catch (error) {
+        ToastAndroid.show("Error on get booking list.", ToastAndroid.SHORT);
         console.error("booking list", error);
       } finally {
         setLoading(false);
@@ -72,6 +75,7 @@ export default function TabBooking(props: any) {
               borderRadius: 6,
               padding: 8,
               marginHorizontal: 20,
+              marginVertical: 12,
             }}
           >
             <Text>
@@ -147,7 +151,7 @@ export default function TabBooking(props: any) {
                 {val?.user_avatar || val?.google_avatar ? (
                   <Image
                     source={{
-                      uri: `https://api.mooxevents.com/api/image/mooxapps/${
+                      uri: `https://api.mooxevents.in/api/image/mooxapps/${
                         val?.user_avatar || val?.google_avatar
                       }`,
                     }}

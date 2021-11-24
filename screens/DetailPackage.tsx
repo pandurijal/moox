@@ -6,6 +6,8 @@ import {
   Image,
   Dimensions,
   ScrollView,
+  ToastAndroid,
+  Linking,
 } from "react-native";
 import Modal from "react-native-modal";
 import { Ionicons } from "@expo/vector-icons";
@@ -38,9 +40,10 @@ export default function DetailPackage(props: any) {
       const { packageId } = route.params;
       try {
         const res = await getPackageDetail(packageId);
-        console.log({ res });
+        console.log("package detail", res);
         setPackageDetail(res?.data);
       } catch (error) {
+        ToastAndroid.show("Error on get package detail.", ToastAndroid.SHORT);
         console.error(error, "package detail");
       }
     };
@@ -51,6 +54,7 @@ export default function DetailPackage(props: any) {
         const res = await getRatingDetail(packageId);
         setRatingDetail(res?.data);
       } catch (error) {
+        ToastAndroid.show("Error on get rating detail", ToastAndroid.SHORT);
         console.error(error, "rating detail");
       }
     };
@@ -65,6 +69,7 @@ export default function DetailPackage(props: any) {
         const res = await getMyEvent();
         setEventList(res?.data);
       } catch (error) {
+        ToastAndroid.show("Error on get event detail.", ToastAndroid.SHORT);
         console.error(error, "my event");
       }
     };
@@ -85,23 +90,44 @@ export default function DetailPackage(props: any) {
       const res = await postBooking(payload);
       console.log({ res });
       if (res) {
+        ToastAndroid.show("Successfully create a booking.", ToastAndroid.SHORT);
         setModalBooking(false);
+        ToastAndroid.show(
+          "Successfully book this package.",
+          ToastAndroid.SHORT
+        );
       }
     } catch (error) {
+      ToastAndroid.show("Error on create booking package.", ToastAndroid.SHORT);
       console.log({ error, res: error.response });
     }
   };
 
-  console.log({ eventList });
+  console.log({ packageDetail });
 
   return (
     <ScrollView>
-      <Image
-        source={{
-          uri: `https://api.mooxevents.com/api/image/mooxapps/${packageDetail?.img_package}`,
-        }}
-        style={{ width: "100%", height: 200 }}
-      />
+      {packageDetail?.img_package ? (
+        <Image
+          source={{
+            uri: `https://api.mooxevents.in/api/image/mooxapps/${packageDetail?.img_package}`,
+          }}
+          style={{ width: "100%", height: 200 }}
+        />
+      ) : (
+        <View
+          style={{
+            height: 200,
+            width: "100%",
+            backgroundColor: "grey",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Text style={{ color: "white" }}>No Image</Text>
+        </View>
+      )}
       <View style={styles.container}>
         <View>
           <Text style={{ textTransform: "capitalize", fontSize: 18 }}>
@@ -159,7 +185,7 @@ export default function DetailPackage(props: any) {
             {packageDetail?.user_avatar ? (
               <Image
                 source={{
-                  uri: `https://api.mooxevents.com/api/image/mooxapps/${packageDetail?.user_avatar}`,
+                  uri: `https://api.mooxevents.in/api/image/mooxapps/${packageDetail?.user_avatar}`,
                 }}
                 style={{
                   width: 30,
@@ -304,27 +330,37 @@ export default function DetailPackage(props: any) {
               Add To My Event
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity
-            style={{
-              backgroundColor: "#fff",
-              padding: 12,
-              borderRadius: 6,
-              borderWidth: 1,
-              borderColor: "#800020",
-              marginBottom: 6,
-            }}
-            onPress={() => navigation.navigate("EventForm")}
-          >
-            <Text
+          {packageDetail?.phone && (
+            <TouchableOpacity
               style={{
-                color: "#800020",
-                fontWeight: "bold",
-                textAlign: "center",
+                backgroundColor: "#fff",
+                padding: 12,
+                borderRadius: 6,
+                borderWidth: 1,
+                borderColor: "#800020",
+                marginBottom: 6,
               }}
+              onPress={() =>
+                Linking.openURL(
+                  `http://api.whatsapp.com/send?phone=${
+                    packageDetail?.phone?.charAt(0)
+                      ? packageDetail?.phone?.replace("0", "91")
+                      : packageDetail?.phone
+                  }`
+                )
+              }
             >
-              Contact Vendor
-            </Text>
-          </TouchableOpacity>
+              <Text
+                style={{
+                  color: "#800020",
+                  fontWeight: "bold",
+                  textAlign: "center",
+                }}
+              >
+                Contact Vendor
+              </Text>
+            </TouchableOpacity>
+          )}
         </View>
       </View>
       <Modal

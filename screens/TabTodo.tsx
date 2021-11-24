@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { TouchableOpacity, StyleSheet, ActivityIndicator } from "react-native";
+import {
+  TouchableOpacity,
+  StyleSheet,
+  ActivityIndicator,
+  ToastAndroid,
+} from "react-native";
 import { useIsFocused } from "@react-navigation/native";
 import { getMyTodo } from "./../services";
 
@@ -20,6 +25,7 @@ export default function TabTodo(props: any) {
         console.log({ res });
         setTodoList(res?.data);
       } catch (error) {
+        ToastAndroid.show("Error on get to do list.", ToastAndroid.SHORT);
         console.log({ error, res: error.response });
       } finally {
         setLoading(false);

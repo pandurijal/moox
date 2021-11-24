@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, Image, ActivityIndicator, Pressable } from "react-native";
+import {
+  StyleSheet,
+  Image,
+  ActivityIndicator,
+  Pressable,
+  ToastAndroid,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { getVendorTypeList } from "./../services";
 
@@ -40,6 +46,7 @@ export default function CategoryList(props: any) {
         console.log({ res });
         setVendorTypeList(res?.data);
       } catch (error) {
+        ToastAndroid.show("Error on get category list.", ToastAndroid.SHORT);
         console.log({ error, res: error.response });
       } finally {
         setLoading(false);
@@ -101,7 +108,7 @@ export default function CategoryList(props: any) {
                   >
                     <Image
                       source={{
-                        uri: `https://api.mooxevents.com/api/image/mooxapps/${val.img_vendor_type}`,
+                        uri: `https://api.mooxevents.in/api/image/mooxapps/${val.img_vendor_type}`,
                       }}
                       style={{
                         width: 36,
